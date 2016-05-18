@@ -2,9 +2,7 @@
 SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
 TIMESTAMP="$(date +%Y%m%d_%H%M%S)"
 LOGDIR="${SCRIPTDIR}/.logs"
-if [[ ! -d "${LOGDIR}" ]]; then
-    mkdir -p "${LOGDIR}"
-fi
+[[ -d "${LOGDIR}" ]] || mkdir -p "${LOGDIR}"
 
 CMD="$(basename "$0")"
 

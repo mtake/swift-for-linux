@@ -161,11 +161,11 @@ diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 +SLEEP_SECONDS=1
 +
 +
-+RESULTS_DIR=${SCRIPTDIR}/operf-results
-+[[ -d "${RESULTS_DIR}" ]] || mkdir -p "${RESULTS_DIR}"
++RESULTSDIR=${SCRIPTDIR}/operf-results
++[[ -d "${RESULTSDIR}" ]] || mkdir -p "${RESULTSDIR}"
 +
 +
-+pushd ${RESULTS_DIR} > /dev/null
++pushd ${RESULTSDIR} > /dev/null
 +
 +
 +while read TEST
