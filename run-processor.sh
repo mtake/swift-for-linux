@@ -24,3 +24,5 @@ java -cp ${BINDIR} SwiftOperfProcessor
 popd > /dev/null
 
 echo "Post processing profiling results finished at $(date)" | tee -a "${LOGDIR}/${CMD}-${TIMESTAMP}.log"
+
+echo "A CSV file \"${RESULTSDIR}/output.csv\" was created."
