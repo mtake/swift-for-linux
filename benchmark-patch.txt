@@ -1,0 +1,413 @@
+diff -uprN benchmark/build.sh benchmark-patched/build.sh
+--- benchmark/build.sh	1970-01-01 09:00:00.000000000 +0900
++++ benchmark-patched/build.sh	2016-05-18 16:54:46.000000000 +0900
+@@ -0,0 +1,100 @@
++#!/usr/bin/env bash
++#set -x
++SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
++source ${SCRIPTDIR}/env.sh
++
++UTILSDIR=${SCRIPTDIR}/utils
++SRCDIR=${SCRIPTDIR}/single-source
++
++
++
++#
++# Flags for codegen
++#
++SWIFTC_FLAGS="-g -O -assert-config Unchecked"
++
++
++
++#
++# Flags for Foundation
++#
++unset SWIFTC_FOUNDATION_FLAGS
++if [[ -n "${MY_SWIFT_BUILD_FOUNDATION}" ]]; then
++    SWIFTC_FOUNDATION_FLAGS="-I ${MY_SWIFT_BUILD_FOUNDATION} -I ${MY_SWIFT_BUILD_FOUNDATION}/usr/lib/swift -L ${MY_SWIFT_BUILD_FOUNDATION} -lFoundation"
++fi
++
++
++
++#
++# Flags for application modules
++#
++[[ -d "${MODULEDIR}" ]] || mkdir -p ${MODULEDIR}
++unset SWIFTC_MODULES
++
++
++
++#
++# Building utils module
++#
++pushd ${MODULEDIR} > /dev/null
++for f in ${UTILSDIR}/TestsUtils.swift; do
++#    echo $f
++    modulename=$(basename $f .swift)
++    echo $modulename
++    swiftc ${SWIFTC_FLAGS} -emit-module -module-name $modulename -emit-library $f
++    SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
++done
++for f in ${UTILSDIR}/DriverUtils.swift; do
++#    echo $f
++    modulename=$(basename $f .swift)
++    echo $modulename
++    swiftc ${SWIFTC_FLAGS} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f ${UTILSDIR}/ArgParse.swift
++    SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
++done
++popd > /dev/null
++
++
++
++#
++# Building single-source module
++#
++pushd ${MODULEDIR} > /dev/null
++for f in ${SRCDIR}/*.swift; do
++#    echo $f
++    modulename=$(basename $f .swift)
++    if [[
++         ( "$modulename" == "DictionaryBridge" ) ||
++         ( "$modulename" == "NSDictionaryCastToSwift" ) ||
++         ( "$modulename" == "NSStringConversion" )
++       ]]; then
++#        echo "Skipping $modulename"
++        continue
++    fi
++    echo $modulename
++    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f
++    [[ $? -eq 0 ]] && SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
++done
++for f in ${SRCDIR}/unit-tests/*.swift; do
++#    echo $f
++    modulename=$(basename $f .swift)
++    if [[
++         ( "$modulename" == "ObjectiveCBridgingStubs" ) ||
++         ( "$modulename" == "ObjectiveCBridging" ) ||
++         ( "$modulename" == "ObjectiveCNoBridgingStubs" )
++       ]]; then
++#        echo "Skipping $modulename"
++        continue
++    fi
++    echo $modulename
++    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f
++    [[ $? -eq 0 ]] && SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
++done
++popd > /dev/null
++
++
++
++#
++# Building application
++#
++SWIFTC_MODULES_FLAGS="-I ${MODULEDIR} -L ${MODULEDIR} ${SWIFTC_MODULES}"
++swiftc ${SWIFTC_FLAGS} ${SWIFTC_MODULES_FLAGS} ${SWIFTC_FOUNDATION_FLAGS} -o ${SCRIPTDIR}/main ${UTILSDIR}/main.swift
+diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
+--- benchmark/clean.sh	1970-01-01 09:00:00.000000000 +0900
++++ benchmark-patched/clean.sh	2016-05-18 16:54:46.000000000 +0900
+@@ -0,0 +1,5 @@
++#!/usr/bin/env bash
++SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
++MODULEDIR=${SCRIPTDIR}/bin
++
++rm -rf ${SCRIPTDIR}/main ${MODULEDIR}
+diff -uprN benchmark/env.sh benchmark-patched/env.sh
+--- benchmark/env.sh	1970-01-01 09:00:00.000000000 +0900
++++ benchmark-patched/env.sh	2016-05-18 16:54:46.000000000 +0900
+@@ -0,0 +1,24 @@
++MODULEDIR=${SCRIPTDIR}/bin
++
++
++if [[ -z "${MY_SWIFT_BUILD_FOUNDATION}" ]]; then
++    UNAME="$(uname)"
++    if [[ "${UNAME}" == "Darwin" ]]; then
++        MY_SWIFT_OS="macosx"
++    elif [[ "${UNAME}" == "Linux" ]]; then
++        MY_SWIFT_OS="linux"
++    else
++        MY_SWIFT_OS="unknown"
++    fi
++    dir="$(dirname "$(which swift)")/../../foundation-${MY_SWIFT_OS}-x86_64/Foundation"
++    [[ -d "${dir}" ]] && export MY_SWIFT_BUILD_FOUNDATION="$(cd "${dir}"; pwd)"
++    unset dir
++    #echo $MY_SWIFT_BUILD_FOUNDATION
++fi
++
++
++# NOTE: this is ok
++export LD_LIBRARY_PATH=${MODULEDIR}${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH}
++if [[ -n "${MY_SWIFT_BUILD_FOUNDATION}" ]]; then
++    export LD_LIBRARY_PATH=${MY_SWIFT_BUILD_FOUNDATION}${LD_LIBRARY_PATH:+:}${LD_LIBRARY_PATH}
++fi
+diff -uprN benchmark/list.sh benchmark-patched/list.sh
+--- benchmark/list.sh	1970-01-01 09:00:00.000000000 +0900
++++ benchmark-patched/list.sh	2016-05-18 16:54:46.000000000 +0900
+@@ -0,0 +1,4 @@
++#!/usr/bin/env bash
++SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
++
++${SCRIPTDIR}/run.sh --list | sed -n -e 's/^    \(.*\)$/\1/p'
+diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
+--- benchmark/run-operf.sh	1970-01-01 09:00:00.000000000 +0900
++++ benchmark-patched/run-operf.sh	2016-05-18 18:25:32.000000000 +0900
+@@ -0,0 +1,47 @@
++#!/usr/bin/env bash
++SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
++source ${SCRIPTDIR}/env.sh
++
++OPERF_FLAGS="--vmlinux /usr/lib/debug/boot/vmlinux-$(uname -r)"
++APP_FLAGS="--iter-scale=10"
++TESTFILE=${SCRIPTDIR}/list.txt
++SLEEP_SECONDS=1
++
++
++RESULTS_DIR=${SCRIPTDIR}/operf-results
++[[ -d "${RESULTS_DIR}" ]] || mkdir -p "${RESULTS_DIR}"
++
++
++pushd ${RESULTS_DIR} > /dev/null
++
++
++while read TEST
++do
++
++DIR="oprofile_data-${TEST}"
++[[ -d "${DIR}" ]] || mkdir -p "${DIR}"
++OPERF_DIR="--session-dir ${DIR}"
++OPREPORT_DIR="--session-dir=${DIR}"
++
++#
++# run with profiling
++#
++cmd="operf ${OPERF_FLAGS} ${OPERF_DIR} ${SCRIPTDIR}/main --run-all ${APP_FLAGS} ${TEST}"
++echo $cmd
++eval $cmd
++
++#
++# post process
++#
++#opreport ${OPREPORT_DIR} 2>&1 > "opreport-${TEST}.txt"
++opreport -l ${OPREPORT_DIR} 2>&1 > "opreport-l-${TEST}.txt"
++opannotate -s ${OPREPORT_DIR} 2>&1 > "opannotate-s-${TEST}.txt"
++opannotate -a ${OPREPORT_DIR} 2>&1 > "opannotate-a-${TEST}.txt"
++
++echo "Sleeping ${SLEEP_SECONDS} seconds"
++sleep ${SLEEP_SECONDS}
++
++done < ${TESTFILE}
++
++
++popd > /dev/null
+diff -uprN benchmark/run.sh benchmark-patched/run.sh
+--- benchmark/run.sh	1970-01-01 09:00:00.000000000 +0900
++++ benchmark-patched/run.sh	2016-05-18 16:54:46.000000000 +0900
+@@ -0,0 +1,8 @@
++#!/usr/bin/env bash
++SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
++source ${SCRIPTDIR}/env.sh
++
++
++cmd="${SCRIPTDIR}/main $*"
++echo $cmd
++eval $cmd
+diff -uprN benchmark/single-source/StringTests.swift benchmark-patched/single-source/StringTests.swift
+--- benchmark/single-source/StringTests.swift	2016-05-18 18:28:01.737522145 +0900
++++ benchmark-patched/single-source/StringTests.swift	2016-05-18 16:54:46.000000000 +0900
+@@ -18,6 +18,7 @@ public func run_StringWithCString(_ N: I
+   }
+ }
+ 
++#if _runtime(_ObjC)
+ public func run_StringHasPrefix(_ N: Int) {
+   let prefix = "prefix"
+   let testString = "prefixedString"
+@@ -65,6 +66,7 @@ public func run_StringHasSuffixUnicode(_
+     }
+   }
+ }
++#endif
+ 
+ @inline(never)
+ internal func compareEqual(_ str1: String, _ str2: String) -> Bool {
+diff -uprN benchmark/single-source/Walsh.swift benchmark-patched/single-source/Walsh.swift
+--- benchmark/single-source/Walsh.swift	2016-05-18 18:28:01.737522145 +0900
++++ benchmark-patched/single-source/Walsh.swift	2016-05-18 16:54:46.000000000 +0900
+@@ -11,7 +11,11 @@
+ //===----------------------------------------------------------------------===//
+ 
+ import TestsUtils
++#if os(Linux)
++import Glibc
++#else
+ import Darwin
++#endif
+ 
+ func IsPowerOfTwo(_ x: Int) -> Bool { return (x & (x - 1)) == 0 }
+ 
+diff -uprN benchmark/utils/DriverUtils.swift benchmark-patched/utils/DriverUtils.swift
+--- benchmark/utils/DriverUtils.swift	2016-05-18 18:28:01.737522145 +0900
++++ benchmark-patched/utils/DriverUtils.swift	2016-05-18 16:54:46.000000000 +0900
+@@ -10,7 +10,11 @@
+ //
+ //===----------------------------------------------------------------------===//
+ 
++#if os(Linux)
++import Glibc
++#else
+ import Darwin
++#endif
+ 
+ struct BenchResults {
+   var delim: String  = ","
+@@ -225,9 +229,13 @@ func stopTrackingObjects(_: UnsafeMutabl
+ #endif
+ 
+ class SampleRunner {
++#if !os(Linux)
+   var info = mach_timebase_info_data_t(numer: 0, denom: 0)
++#endif
+   init() {
++#if !os(Linux)
+     mach_timebase_info(&info)
++#endif
+   }
+   func run(_ name: String, fn: (Int) -> Void, num_iters: UInt) -> UInt64 {
+     // Start the timer.
+@@ -235,17 +243,30 @@ class SampleRunner {
+     var str = name
+     startTrackingObjects(UnsafeMutablePointer<Void>(str._core.startASCII))
+ #endif
++#if os(Linux)
++    let start_ticks = clock()
++#else
+     let start_ticks = mach_absolute_time()
++#endif
+     fn(Int(num_iters))
+     // Stop the timer.
++#if os(Linux)
++    let end_ticks = clock()
++#else
+     let end_ticks = mach_absolute_time()
++#endif
+ #if SWIFT_RUNTIME_ENABLE_LEAK_CHECKER
+     stopTrackingObjects(UnsafeMutablePointer<Void>(str._core.startASCII))
+ #endif
+ 
+     // Compute the spent time and the scaling factor.
+     let elapsed_ticks = end_ticks - start_ticks
++#if os(Linux)
++//    return UInt64(elapsed_ticks) * UInt64(1000000000) / UInt64(CLOCKS_PER_SEC)
++    return UInt64(elapsed_ticks) * UInt64(1000) // POSIX requires CLOCKS_PER_SEC to be 1000000
++#else
+     return elapsed_ticks * UInt64(info.numer) / UInt64(info.denom)
++#endif
+   }
+ }
+ 
+diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
+--- benchmark/utils/main.swift	2016-05-18 18:28:01.741522145 +0900
++++ benchmark-patched/utils/main.swift	2016-05-18 16:54:46.000000000 +0900
+@@ -41,7 +41,9 @@ import DeadArray
+ import DictTest
+ import DictTest2
+ import DictTest3
++#if !os(Linux)
+ import DictionaryBridge
++#endif
+ import DictionaryLiteral
+ import DictionaryRemove
+ import DictionarySwap
+@@ -58,14 +60,20 @@ import MapReduce
+ import Memset
+ import MonteCarloE
+ import MonteCarloPi
++#if !os(Linux)
+ import NSDictionaryCastToSwift
++#endif
+ import NSError
++#if !os(Linux)
+ import NSStringConversion
++#endif
+ import NopDeinit
+ import ObjectAllocation
++#if _runtime(_ObjC)
+ import ObjectiveCBridging
+ import ObjectiveCBridgingStubs
+ import ObjectiveCNoBridgingStubs
++#endif
+ import OpenClose
+ import Phonebook
+ import PolymorphicCalls
+@@ -127,7 +135,11 @@ precommitTests = [
+   "Dictionary2OfObjects": run_Dictionary2OfObjects,
+   "Dictionary3": run_Dictionary3,
+   "Dictionary3OfObjects": run_Dictionary3OfObjects,
++  /*
++#if !os(Linux)
+   "DictionaryBridge": run_DictionaryBridge,
++#endif
++  */
+   "DictionaryLiteral": run_DictionaryLiteral,
+   "DictionaryRemove": run_DictionaryRemove,
+   "DictionaryRemoveOfObjects": run_DictionaryRemoveOfObjects,
+@@ -145,11 +157,21 @@ precommitTests = [
+   "Memset": run_Memset,
+   "MonteCarloE": run_MonteCarloE,
+   "MonteCarloPi": run_MonteCarloPi,
++  /*
++#if !os(Linux)
+   "NSDictionaryCastToSwift": run_NSDictionaryCastToSwift,
++#endif
++  */
+   "NSError": run_NSError,
++  /*
++#if !os(Linux)
+   "NSStringConversion": run_NSStringConversion,
++#endif
++  */
+   "NopDeinit": run_NopDeinit,
+   "ObjectAllocation": run_ObjectAllocation,
++  /*
++#if _runtime(_ObjC)
+   "ObjectiveCBridgeFromNSString": run_ObjectiveCBridgeFromNSString,
+   "ObjectiveCBridgeFromNSStringForced": run_ObjectiveCBridgeFromNSStringForced,
+   "ObjectiveCBridgeToNSString": run_ObjectiveCBridgeToNSString,
+@@ -173,6 +195,8 @@ precommitTests = [
+   "ObjectiveCBridgeStubFromArrayOfNSString": run_ObjectiveCBridgeStubFromArrayOfNSString,
+   "ObjectiveCBridgeStubToArrayOfNSString": run_ObjectiveCBridgeStubToArrayOfNSString,
+   "ObjectiveCBridgeStubFromNSStringRef": run_ObjectiveCBridgeStubFromNSStringRef,
++#endif
++  */
+   "OpenClose": run_OpenClose,
+   "Phonebook": run_Phonebook,
+   "PolymorphicCalls": run_PolymorphicCalls,
+@@ -207,10 +231,14 @@ precommitTests = [
+   "StringBuilder": run_StringBuilder,
+   "StringEqualPointerComparison": run_StringEqualPointerComparison,
+   "StringInterpolation": run_StringInterpolation,
++  /*
++#if _runtime(_ObjC)
+   "StringHasPrefix": run_StringHasPrefix,
+   "StringHasPrefixUnicode": run_StringHasPrefixUnicode,
+   "StringHasSuffix": run_StringHasSuffix,
+   "StringHasSuffixUnicode": run_StringHasSuffixUnicode,
++#endif
++  */
+   "StringWalk": run_StringWalk,
+   "StringWithCString": run_StringWithCString,
+   "SuperChars": run_SuperChars,
+diff -uprN benchmark/utils/TestsUtils.swift benchmark-patched/utils/TestsUtils.swift
+--- benchmark/utils/TestsUtils.swift	2016-05-18 18:28:01.741522145 +0900
++++ benchmark-patched/utils/TestsUtils.swift	2016-05-18 16:54:46.000000000 +0900
+@@ -10,7 +10,11 @@
+ //
+ //===----------------------------------------------------------------------===//
+ 
++#if os(Linux)
++import Glibc
++#else
+ import Darwin
++#endif
+ 
+ // Linear function shift register.
+ //
