@@ -19,8 +19,7 @@ $ cd swift-for-linux
 5. Build Swift
 ```sh
 $ ./update-deps.sh
-$ ./build.sh-1st
-$ ./build.sh-2nd
+$ ./build.sh
 ```
 
 ## Building and running Swift benchmark suite
