@@ -1,7 +1,7 @@
 diff -uprN benchmark/build.sh benchmark-patched/build.sh
 --- benchmark/build.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/build.sh	2016-05-19 11:16:27.341472427 +0900
-@@ -0,0 +1,100 @@
++++ benchmark-patched/build.sh	2016-05-23 18:04:21.165168334 +0900
+@@ -0,0 +1,107 @@
 +#!/usr/bin/env bash
 +#set -x
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -75,7 +75,12 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +        continue
 +    fi
 +    echo $modulename
-+    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f
++    if [[ ( "$modulename" != "ProtocolDispatch") ]]; then
++        OPTIONAL_SOURCES="${UTILSDIR}/TestsUtils.swift"
++    else
++        unset OPTIONAL_SOURCES
++    fi
++    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f ${OPTIONAL_SOURCES}
 +    [[ $? -eq 0 ]] && SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
 +done
 +for f in ${SRCDIR}/unit-tests/*.swift; do
@@ -90,7 +95,8 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +        continue
 +    fi
 +    echo $modulename
-+    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f
++    OPTIONAL_SOURCES="${UTILSDIR}/TestsUtils.swift"
++    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f ${OPTIONAL_SOURCES}
 +    [[ $? -eq 0 ]] && SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
 +done
 +popd > /dev/null
@@ -101,10 +107,11 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +# Building application
 +#
 +SWIFTC_MODULES_FLAGS="-I ${MODULEDIR} -L ${MODULEDIR} ${SWIFTC_MODULES}"
-+swiftc ${SWIFTC_FLAGS} ${SWIFTC_MODULES_FLAGS} ${SWIFTC_FOUNDATION_FLAGS} -o ${SCRIPTDIR}/main ${UTILSDIR}/main.swift
++OPTIONAL_SOURCES="${UTILSDIR}/TestsUtils.swift ${UTILSDIR}/DriverUtils.swift ${UTILSDIR}/ArgParse.swift"
++swiftc ${SWIFTC_FLAGS} ${SWIFTC_MODULES_FLAGS} ${SWIFTC_FOUNDATION_FLAGS} -o ${SCRIPTDIR}/main ${UTILSDIR}/main.swift ${OPTIONAL_SOURCES}
 diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
 --- benchmark/clean.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/clean.sh	2016-05-19 11:16:27.341472427 +0900
++++ benchmark-patched/clean.sh	2016-05-18 16:54:46.769526743 +0900
 @@ -0,0 +1,5 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -113,7 +120,7 @@ diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
 +rm -rf ${SCRIPTDIR}/main ${MODULEDIR}
 diff -uprN benchmark/env.sh benchmark-patched/env.sh
 --- benchmark/env.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/env.sh	2016-05-19 11:25:21.533471988 +0900
++++ benchmark-patched/env.sh	2016-05-23 18:15:07.065167803 +0900
 @@ -0,0 +1,23 @@
 +MODULEDIR=${SCRIPTDIR}/bin
 +
@@ -140,7 +147,7 @@ diff -uprN benchmark/env.sh benchmark-patched/env.sh
 +fi
 diff -uprN benchmark/list.sh benchmark-patched/list.sh
 --- benchmark/list.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/list.sh	2016-05-19 11:16:27.341472427 +0900
++++ benchmark-patched/list.sh	2016-05-18 16:54:46.769526743 +0900
 @@ -0,0 +1,4 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -148,7 +155,7 @@ diff -uprN benchmark/list.sh benchmark-patched/list.sh
 +${SCRIPTDIR}/run.sh --list | sed -n -e 's/^    \(.*\)$/\1/p'
 diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 --- benchmark/run-operf.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/run-operf.sh	2016-05-19 11:16:27.341472427 +0900
++++ benchmark-patched/run-operf.sh	2016-05-18 20:47:45.573515256 +0900
 @@ -0,0 +1,47 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -199,7 +206,7 @@ diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 +popd > /dev/null
 diff -uprN benchmark/run.sh benchmark-patched/run.sh
 --- benchmark/run.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/run.sh	2016-05-19 11:16:27.341472427 +0900
++++ benchmark-patched/run.sh	2016-05-18 16:54:46.769526743 +0900
 @@ -0,0 +1,8 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -210,8 +217,8 @@ diff -uprN benchmark/run.sh benchmark-patched/run.sh
 +echo $cmd
 +eval $cmd
 diff -uprN benchmark/single-source/StringTests.swift benchmark-patched/single-source/StringTests.swift
---- benchmark/single-source/StringTests.swift	2016-05-19 11:35:00.657471513 +0900
-+++ benchmark-patched/single-source/StringTests.swift	2016-05-19 11:16:27.341472427 +0900
+--- benchmark/single-source/StringTests.swift	2016-05-23 17:57:32.505168670 +0900
++++ benchmark-patched/single-source/StringTests.swift	2016-05-18 16:54:46.769526743 +0900
 @@ -18,6 +18,7 @@ public func run_StringWithCString(_ N: I
    }
  }
@@ -229,8 +236,8 @@ diff -uprN benchmark/single-source/StringTests.swift benchmark-patched/single-so
  @inline(never)
  internal func compareEqual(_ str1: String, _ str2: String) -> Bool {
 diff -uprN benchmark/single-source/Walsh.swift benchmark-patched/single-source/Walsh.swift
---- benchmark/single-source/Walsh.swift	2016-05-19 11:35:00.661471513 +0900
-+++ benchmark-patched/single-source/Walsh.swift	2016-05-19 11:16:27.341472427 +0900
+--- benchmark/single-source/Walsh.swift	2016-05-23 17:57:32.505168670 +0900
++++ benchmark-patched/single-source/Walsh.swift	2016-05-18 16:54:46.769526743 +0900
 @@ -11,7 +11,11 @@
  //===----------------------------------------------------------------------===//
  
@@ -244,8 +251,8 @@ diff -uprN benchmark/single-source/Walsh.swift benchmark-patched/single-source/W
  func IsPowerOfTwo(_ x: Int) -> Bool { return (x & (x - 1)) == 0 }
  
 diff -uprN benchmark/utils/DriverUtils.swift benchmark-patched/utils/DriverUtils.swift
---- benchmark/utils/DriverUtils.swift	2016-05-19 11:35:00.661471513 +0900
-+++ benchmark-patched/utils/DriverUtils.swift	2016-05-19 11:16:27.341472427 +0900
+--- benchmark/utils/DriverUtils.swift	2016-05-23 17:57:32.505168670 +0900
++++ benchmark-patched/utils/DriverUtils.swift	2016-05-18 16:54:46.769526743 +0900
 @@ -10,7 +10,11 @@
  //
  //===----------------------------------------------------------------------===//
@@ -304,8 +311,8 @@ diff -uprN benchmark/utils/DriverUtils.swift benchmark-patched/utils/DriverUtils
  }
  
 diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
---- benchmark/utils/main.swift	2016-05-19 11:35:00.661471513 +0900
-+++ benchmark-patched/utils/main.swift	2016-05-19 11:16:27.341472427 +0900
+--- benchmark/utils/main.swift	2016-05-23 17:57:32.505168670 +0900
++++ benchmark-patched/utils/main.swift	2016-05-18 16:54:46.769526743 +0900
 @@ -41,7 +41,9 @@ import DeadArray
  import DictTest
  import DictTest2
@@ -396,8 +403,8 @@ diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
    "StringWithCString": run_StringWithCString,
    "SuperChars": run_SuperChars,
 diff -uprN benchmark/utils/TestsUtils.swift benchmark-patched/utils/TestsUtils.swift
---- benchmark/utils/TestsUtils.swift	2016-05-19 11:35:00.661471513 +0900
-+++ benchmark-patched/utils/TestsUtils.swift	2016-05-19 11:16:27.341472427 +0900
+--- benchmark/utils/TestsUtils.swift	2016-05-23 17:57:32.505168670 +0900
++++ benchmark-patched/utils/TestsUtils.swift	2016-05-18 16:54:46.769526743 +0900
 @@ -10,7 +10,11 @@
  //
  //===----------------------------------------------------------------------===//
