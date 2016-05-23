@@ -17,12 +17,8 @@ fi
 
 echo "Post processing profiling results started at $(date)" | tee -a "${LOGDIR}/${CMD}-${TIMESTAMP}.log"
 
-pushd ${RESULTSDIR} > /dev/null
-
-java -cp ${BINDIR} SwiftOperfProcessor
-
-popd > /dev/null
+java -cp ${BINDIR} SwiftOperfProcessor ${RESULTSDIR}/opreport-l-*.txt
 
 echo "Post processing profiling results finished at $(date)" | tee -a "${LOGDIR}/${CMD}-${TIMESTAMP}.log"
 
-echo "A CSV file \"${RESULTSDIR}/output.csv\" was created."
+echo "A CSV file \"output.csv\" was created."
