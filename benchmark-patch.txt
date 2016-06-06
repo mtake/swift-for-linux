@@ -198,9 +198,9 @@ diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 +# post process
 +#
 +#opreport ${OPREPORT_DIR} 2>&1 > "opreport-${TEST}.txt"
-+opreport --demangle=none -l ${OPREPORT_DIR} 2>&1 > "opreport-l-${TEST}.txt-raw"
-+opannotate --demangle=none -s ${OPREPORT_DIR} 2>&1 > "opannotate-s-${TEST}.txt-raw"
-+opannotate --demangle=none -a ${OPREPORT_DIR} 2>&1 > "opannotate-a-${TEST}.txt-raw"
++opreport -l ${OPREPORT_DIR} 2>&1 > "opreport-l-${TEST}.txt-raw"
++opannotate -s ${OPREPORT_DIR} 2>&1 > "opannotate-s-${TEST}.txt-raw"
++opannotate -a ${OPREPORT_DIR} 2>&1 > "opannotate-a-${TEST}.txt-raw"
 +cat "opreport-l-${TEST}.txt-raw" | swift-demangle > "opreport-l-${TEST}.txt"
 +cat "opannotate-s-${TEST}.txt-raw" | swift-demangle > "opannotate-s-${TEST}.txt"
 +cat "opannotate-a-${TEST}.txt-raw" | swift-demangle > "opannotate-a-${TEST}.txt"
