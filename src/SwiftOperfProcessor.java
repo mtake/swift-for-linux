@@ -202,8 +202,7 @@ public class SwiftOperfProcessor {
 				}
 
 				//84214    53.6214  libswiftCore.so          _swift_retain_
-				String[] splits = line.split(" +");
-				assert splits.length == 4;
+				String[] splits = line.split(" +", 4);
 				
 				long sample = Long.parseLong(splits[0]);		// 84214
 				applicationtotalsample += sample;
