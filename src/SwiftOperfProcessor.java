@@ -34,7 +34,8 @@ public class SwiftOperfProcessor {
 	static final Pattern images_LIBICU = Pattern.compile("libicu.*");
 	static final Pattern symbols_SWIFT_ARC = Pattern.compile(".*swift_(release|retain).*");
 
-	static final String image_APPLICATION = "application";
+	// NOTE image name for application must be "main" when compiled with -Ounchecked -whole-module-optimization
+	static final String image_APPLICATION = "main";
 	// NOTE * is not allowed for excel sheet name
 //	static final String image_LIBICU = images_LIBICU.pattern();
 	static final String image_LIBICU = "libicu";
