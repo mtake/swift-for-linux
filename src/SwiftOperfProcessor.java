@@ -32,73 +32,47 @@ public class SwiftOperfProcessor {
 	static final String image_suffix = ".so";
 
 	static final Pattern images_LIBICU = Pattern.compile("libicu.*");
-	static final Pattern symbols_SWIFT_ARC = Pattern.compile(".*swift_(release|retain).*");
+	static final Pattern images_LIBC = Pattern.compile("libc-.*");
+	static final Pattern images_LD = Pattern.compile("ld-.*");
+	static final Pattern images_LIBFOUNDATION = Pattern.compile("libFoundation.*");
+	static final Pattern images_VMLINUX = Pattern.compile("vmlinux-.*");
+	static final Pattern images_LIBSWIFTCORE = Pattern.compile("libswiftCore.*");
+	static final Pattern symbols_LIBSWIFTCORE_ARC = Pattern.compile(".*swift_(release|retain).*");
 
 	// NOTE image name for application must be "main" when compiled with -Ounchecked -whole-module-optimization
 	static final String image_APPLICATION = "main";
 	// NOTE * is not allowed for excel sheet name
 //	static final String image_LIBICU = images_LIBICU.pattern();
 	static final String image_LIBICU = "libicu";
-	static final String image_OTHERS = "others";
-	static final String image_SWIFT = "libswiftCore.so";
 	// NOTE * is not allowed for excel sheet name
-//	static final String image_SWIFT_ARC = "libswiftCore(" + symbols_SWIFT_ARC.pattern() + ")";
-	static final String image_SWIFT_ARC = "libswiftCore(ARC)";
-	static final String image_SWIFT_OTHERS = "libswiftCore(others)";
+//	static final String image_LIBC = images_LIBC.pattern();
+	static final String image_LIBC = "libc";
+	// NOTE * is not allowed for excel sheet name
+//	static final String image_LD = images_LD.pattern();
+	static final String image_LD = "ld";
+	// NOTE * is not allowed for excel sheet name
+//	static final String image_LIBFOUNDATION = images_LIBFOUNDATION.pattern();
+	static final String image_LIBFOUNDATION = "libFoundation";
+	// NOTE * is not allowed for excel sheet name
+//	static final String image_VMLINUX = images_VMLINUX.pattern();
+	static final String image_VMLINUX = "vmlinux";
+	static final String image_OTHERS = "others";
+	// NOTE * is not allowed for excel sheet name
+//	static final String image_SWIFTCORE_ARC = "libswiftCore(" + symbols_LIBSWIFTCORE_ARC.pattern() + ")";
+	static final String image_SWIFTCORE_ARC = "libswiftCore(ARC)";
+	static final String image_SWIFTCORE_OTHERS = "libswiftCore(others)";
 
-	/*
-	// original
-	static final String[] top_images = {
-		image_APPLICATION,
-		image_SWIFT,
-		"libc-2.21.so",
-		"libTestsUtils.so",
-		"libicui18n.so.55.1",
-		"vmlinux-4.2.0-16-generic",
-		"libicuuc.so.55.1",
-		"ld-2.21.so",
-		"libFoundation.so"
-	};
-	*/
-	/*
-	// merged
-	static final String[] top_images = {
-		image_APPLICATION,
-		image_SWIFT,
-		"libc-2.21.so",
-//		"libTestsUtils.so", // mergeImage -> image_APPLICATION
-		image_LIBICU,
-//		"libicui18n.so.55.1", // mergeImage -> image_LIBICU
-		"vmlinux-4.2.0-16-generic",
-//		"libicuuc.so.55.1", // mergeImage -> image_LIBICU
-		"ld-2.21.so",
-		"libFoundation.so"
-	};
-	*/
-	/*
-	// merged and sorted
-	static final String[] top_images = {
-		image_APPLICATION,
-		image_OTHERS,
-		"libFoundation.so",
-		"ld-2.21.so",
-		"vmlinux-4.2.0-16-generic",
-		image_LIBICU,
-		"libc-2.21.so",
-		image_SWIFT // splitImage -> image_SWIFT_ARC, image_SWIFT_OTHERS
-	};
-	*/
 	// merged, split and sorted
 	static final String[] top_images = {
 		image_APPLICATION,
 		image_OTHERS,
-		"libFoundation.so",
-		"ld-2.21.so",
-		"vmlinux-4.2.0-16-generic",
+		image_LIBFOUNDATION,
+		image_LD,
+		image_VMLINUX,
 		image_LIBICU,
-		"libc-2.21.so",
-		image_SWIFT_OTHERS,
-		image_SWIFT_ARC
+		image_LIBC,
+		image_SWIFTCORE_OTHERS,
+		image_SWIFTCORE_ARC
 	};
 	static final Set<String> top_images_set = new HashSet<String>();
 	static {
@@ -148,6 +122,18 @@ public class SwiftOperfProcessor {
 		if (images_LIBICU.matcher(image).matches()) {
 			return image_LIBICU;
 		}
+		if (images_LIBC.matcher(image).matches()) {
+			return image_LIBC;
+		}
+		if (images_LD.matcher(image).matches()) {
+			return image_LD;
+		}
+		if (images_LIBFOUNDATION.matcher(image).matches()) {
+			return image_LIBFOUNDATION;
+		}
+		if (images_VMLINUX.matcher(image).matches()) {
+			return image_VMLINUX;
+		}
 		if ("libTestsUtils.so".equals(image)) {
 			return image_APPLICATION;
 		}
@@ -155,13 +141,13 @@ public class SwiftOperfProcessor {
 	}
 
 	static String splitImage(String image, String symbol) {
-		if (!image_SWIFT.equals(image)) return image;
+		if (!images_LIBSWIFTCORE.matcher(image).matches()) return image;
 		
-		if (symbols_SWIFT_ARC.matcher(symbol).matches()) {
-			return image_SWIFT_ARC;
+		if (symbols_LIBSWIFTCORE_ARC.matcher(symbol).matches()) {
+			return image_SWIFTCORE_ARC;
 		} else {
 //			System.out.println(symbol);
-			return image_SWIFT_OTHERS;
+			return image_SWIFTCORE_OTHERS;
 		}
 	}
 
