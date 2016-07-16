@@ -30,7 +30,8 @@ ${SCRIPTDIR}/../swift/utils/update-checkout ${CLONE_OPT}
 
 if [[ "${UNAME}" == "Darwin" ]]; then
     pushd ${SCRIPTDIR}/.. > /dev/null
-    git clone ${NINJA_URL}
+    echo "--- Updating '$(pwd)/ninja' ---"
+    [[ -d "ninja" ]] || git clone ${NINJA_URL}
     (cd ninja; git checkout release)
     popd > /dev/null
 fi
