@@ -7,16 +7,10 @@ LOGDIR="${SCRIPTDIR}/.logs"
 UNAME="$(uname)"
 CMD="$(basename "$0")"
 
-#
-# TODO: check ssh connectivity to github.com
-#
-if [[ "$(hostname)" =~ "s72hs23-7" ]]; then
-    unset USE_SSH
-else
-    USE_SSH=1
-fi
+# NOTE: set USE_HTTPS if no ssh connectivity
+#USE_HTTPS=1
 
-if [[ -z "${USE_SSH}" ]]; then
+if [[ -n "${USE_HTTPS}" ]]; then
     CLONE_OPT="--clone"
     NINJA_URL="https://github.com/ninja-build/ninja.git"
 else
