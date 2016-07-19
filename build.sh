@@ -14,10 +14,12 @@ rm -rf "${INSTALLDIR}"
 if [[ "${UNAME}" == "Darwin" ]]; then
     BUILD_SUBDIR=buildbot_incremental
     BUILD_OPTION="--preset=buildbot_incremental"
-#    BUILD_OPTION="--preset=buildbot_incremental_osx"
+#    BUILD_OPTION="--preset=buildbot_incremental_my"
 elif [[ "${UNAME}" == "Linux" ]]; then
     BUILD_SUBDIR=buildbot_linux
     BUILD_OPTION="--preset=buildbot_linux install_destdir=${INSTALLDIR} installable_package=${INSTALLDIR}-${TIMESTAMP}.tar.gz"
+#    BUILD_SUBDIR=buildbot_incremental
+#    BUILD_OPTION="--preset=buildbot_incremental_linux_my"
 else
     echo "Error: unknown operating system: ${UNAME}"
     exit 1
