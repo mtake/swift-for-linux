@@ -13,21 +13,23 @@ BUILD_SCRIPT=${SCRIPTDIR}/../swift/utils/build-script
 INSTALLDIR="${SCRIPTDIR}/../install"
 
 if [[ "${UNAME}" == "Darwin" ]]; then
-    MY_PRESET=buildbot_incremental_my
-    if [[ -n "$(${BUILD_SCRIPT} --show-presets | grep ${MY_PRESET})" ]]; then
-        BUILD_OPTION="--preset=${MY_PRESET}"
-        BUILD_SUBDIR=buildbot_incremental
-    else
-        BUILD_OPTION="--preset=buildbot_incremental"
-        BUILD_SUBDIR=buildbot_incremental
+    PRESET=buildbot_incremental_my
+    if [[ -z "$(${BUILD_SCRIPT} --show-presets | grep ${PRESET})" ]]; then
+        PRESET=buildbot_incremental
     fi
+    BUILD_OPTION="--preset=${PRESET}"
+    BUILD_SUBDIR=buildbot_incremental
 elif [[ "${UNAME}" == "Linux" ]]; then
-    MY_PRESET=buildbot_incremental_linux_my
-    if [[ -n "$(${BUILD_SCRIPT} --show-presets | grep ${MY_PRESET})" ]]; then
-        BUILD_OPTION="--preset=${MY_PRESET}"
+    PRESET=buildbot_incremental_linux_my
+    if [[ -n "$(${BUILD_SCRIPT} --show-presets | grep ${PRESET})" ]]; then
+        BUILD_OPTION="--preset=${PRESET}"
         BUILD_SUBDIR=buildbot_incremental
     else
-        BUILD_OPTION="--preset=buildbot_linux install_destdir=${INSTALLDIR} installable_package=${INSTALLDIR}-${TIMESTAMP}.tar.gz"
+        PRESET=buildbot_linux_my
+        if [[ -z "$(${BUILD_SCRIPT} --show-presets | grep ${PRESET})" ]]; then
+            PRESET=buildbot_linux
+        fi
+        BUILD_OPTION="--preset=${PRESET} install_destdir=${INSTALLDIR} installable_package=${INSTALLDIR}-${TIMESTAMP}.tar.gz"
         BUILD_SUBDIR=buildbot_linux
         rm -rf "${INSTALLDIR}"
     fi

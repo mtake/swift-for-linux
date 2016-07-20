@@ -10,8 +10,58 @@ assertions
 llbuild
 swiftpm
 
+
+
 [preset: buildbot_incremental_linux_my]
 mixin-preset=buildbot_incremental_linux
 build-subdir=buildbot_incremental
-# doesn't build for now
+
+
+
+[preset: mixin_linux_installation_my]
+mixin-preset=mixin_lightweight_assertions
+
+llbuild
+swiftpm
+xctest
+dash-dash
+
+install-swift
+# Note: skip lldb for now
+#install-lldb
+install-llbuild
+install-swiftpm
+install-xctest
+install-prefix=/usr
+swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;sdk-overlay;license
+build-swift-static-stdlib
+build-swift-stdlib-unittest-extra
+
+# Executes the lit tests for the installable package that is created
+# Assumes the swift-integration-tests repo is checked out
+# Note: skip lldb for now
+#test-installable-package
+
+# Path to the root of the installation filesystem.
+install-destdir=%(install_destdir)s
+
+# Path to the .tar.gz package we would create.
+installable-package=%(installable_package)s
+
+
+[preset: buildbot_linux_my]
+mixin-preset=mixin_linux_installation_my
+build-subdir=buildbot_linux
+# Note: skip lldb for now
 #lldb
+release
+test
+validation-test
+# Note: skip long-test for now
+#long-test
+foundation
+
+dash-dash
+
+install-foundation
+reconfigure
