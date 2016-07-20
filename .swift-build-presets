@@ -13,3 +13,5 @@ swiftpm
 [preset: buildbot_incremental_linux_my]
 mixin-preset=buildbot_incremental_linux
 build-subdir=buildbot_incremental
+# doesn't build for now
+#lldb
