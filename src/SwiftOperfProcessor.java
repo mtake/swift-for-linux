@@ -178,6 +178,8 @@ public class SwiftOperfProcessor {
 					
 			while ((line = reader.readLine()) != null) {
 				
+				if (line.length() == 0) continue;
+
 				char c = line.charAt(0);
 				
 				if (!Character.isDigit(c)) {
