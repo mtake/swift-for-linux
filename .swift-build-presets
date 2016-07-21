@@ -1,6 +1,7 @@
 # ~/.swift-build-presets
 
 [preset: buildbot_incremental_my]
+# Note: same as buildbot_incremental except for building only for osx
 mixin-preset=buildbot_incremental_base
 build-subdir=buildbot_incremental
 # Build Release without debug info, because it is faster to build.
@@ -13,12 +14,15 @@ swiftpm
 
 
 [preset: buildbot_incremental_linux_my]
+# Note: same as buildbot_incremental_linux except for specifying build-subdir
+# Note: needed only for slightly old our internal codebase where buildbot_incremental_linux doesn't specify build-subdir
 mixin-preset=buildbot_incremental_linux
 build-subdir=buildbot_incremental
 
 
 
 [preset: mixin_linux_installation_my]
+# Note: needed only for slightly old our internal codebase where lldb doesn't compile
 mixin-preset=mixin_lightweight_assertions
 
 llbuild
@@ -50,6 +54,7 @@ installable-package=%(installable_package)s
 
 
 [preset: buildbot_linux_my]
+# Note: needed only for slightly old our internal codebase where lldb doesn't compile
 mixin-preset=mixin_linux_installation_my
 build-subdir=buildbot_linux
 # Note: skip lldb for now
