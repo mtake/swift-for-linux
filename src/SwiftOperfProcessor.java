@@ -82,6 +82,13 @@ public class SwiftOperfProcessor {
 	static final TreeMap<String,String> application_to_image = new TreeMap<String,String>();
 	static {
 		application_to_image.put("ArrayAppendReserved", "ArrayAppend");
+		application_to_image.put("ArrayAppendSequence", "ArrayAppend");
+		application_to_image.put("ArrayAppendArrayOfInt", "ArrayAppend");
+		application_to_image.put("ArrayAppendStrings", "ArrayAppend");
+		application_to_image.put("ArrayAppendGenericStructs", "ArrayAppend");
+		application_to_image.put("ArrayAppendOptionals", "ArrayAppend");
+		application_to_image.put("ArrayAppendLazyMap", "ArrayAppend");
+		application_to_image.put("ArrayAppendRepeatCol", "ArrayAppend");
 		application_to_image.put("ArrayValueProp", "ArrayLiteral");
 		application_to_image.put("ArrayValueProp2", "ArrayLiteral");
 		application_to_image.put("ArrayValueProp3", "ArrayLiteral");
