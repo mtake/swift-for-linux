@@ -1,25 +1,72 @@
 # ~/.swift-build-presets
 
+#
+# For Mac, incremental
+#
+
 [preset: buildbot_incremental_my]
 # Note: same as buildbot_incremental except for building only for osx
 mixin-preset=buildbot_incremental_base
+
 build-subdir=buildbot_incremental
+
 # Build Release without debug info, because it is faster to build.
 release
 assertions
+
 # Build llbuild & swiftpm here
 llbuild
 swiftpm
 
+# Build Playground support
+# Note: skip playground support for now
+#playgroundlogger
+#playgroundsupport
+
+dash-dash
+
+# Only run OS X tests to make the build cycle faster.
+# We still build the iOS standard library though -- it is free given the
+# parallelism.
+skip-test-ios
+skip-test-tvos
+skip-test-watchos
 
 
-[preset: buildbot_incremental_linux_my]
-# Note: same as buildbot_incremental_linux except for specifying build-subdir
-# Note: needed only for slightly old our internal codebase where buildbot_incremental_linux doesn't specify build-subdir
-mixin-preset=buildbot_incremental_linux
+#
+# For Linux, incremental
+#
+
+[preset: buildbot_incremental_linux_base_my]
+assertions
+release
+#### WIP temporarily disable test
+####test
+####validation-test
+lit-args=-v
+
+dash-dash
+
+reconfigure
+
+
+# Note: As of 2016.11.28, incremental build on Linux cannot be used for compiling swift programs which import Foundation (that requires Dispatch).
+#[preset: buildbot_incremental_linux_my]
+[preset: DISABLE_FOR_NOW]
+mixin-preset=buildbot_incremental_linux_base_my
 build-subdir=buildbot_incremental
 
+llbuild
+swiftpm
+xctest
+foundation
+libdispatch
+dash-dash
 
+
+#
+# For Linux, install
+#
 
 [preset: mixin_linux_installation_my]
 # Note: needed only for slightly old our internal codebase where lldb doesn't compile
@@ -31,20 +78,20 @@ xctest
 dash-dash
 
 install-swift
-# Note: skip lldb for now
-#install-lldb
+install-lldb
 install-llbuild
 install-swiftpm
 install-xctest
 install-prefix=/usr
-swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;sdk-overlay;license
+swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license
 build-swift-static-stdlib
+build-swift-static-sdk-overlay
 build-swift-stdlib-unittest-extra
 
 # Executes the lit tests for the installable package that is created
 # Assumes the swift-integration-tests repo is checked out
-# Note: skip lldb for now
-#test-installable-package
+#### WIP temporarily disable test
+####test-installable-package
 
 # Path to the root of the installation filesystem.
 install-destdir=%(install_destdir)s
@@ -54,19 +101,20 @@ installable-package=%(installable_package)s
 
 
 [preset: buildbot_linux_my]
-# Note: needed only for slightly old our internal codebase where lldb doesn't compile
 mixin-preset=mixin_linux_installation_my
 build-subdir=buildbot_linux
-# Note: skip lldb for now
-#lldb
+lldb
 release
-test
-validation-test
-# Note: skip long-test for now
-#long-test
+#### WIP temporarily disable test
+####test
+####validation-test
+####long-test
 foundation
+libdispatch
+lit-args=-v
 
 dash-dash
 
 install-foundation
+install-libdispatch
 reconfigure
