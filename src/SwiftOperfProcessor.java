@@ -20,7 +20,7 @@ import java.util.TreeMap;
  * Usage: java SwiftOperfProcessor [file1 file2 ...]
  * 
  * Files must be something like "opreport-l-APPLICATION.txt", where APPLICATION is used for the label in the output file.
- * When no files are specified, files with the valid name are searched from the current working directory.  
+ * When no files were specified, files with the valid name will be searched from the current working directory.
  * 
  * @author mtake
  */
@@ -37,29 +37,35 @@ public class SwiftOperfProcessor {
 	static final Pattern images_LIBFOUNDATION = Pattern.compile("libFoundation.*");
 	static final Pattern images_VMLINUX = Pattern.compile("vmlinux-.*");
 	static final Pattern images_LIBSWIFTCORE = Pattern.compile("libswiftCore.*");
-	static final Pattern symbols_LIBSWIFTCORE_ARC = Pattern.compile(".*swift_(release|retain).*");
+	static final Pattern symbols_LIBSWIFTCORE_ATOMIC_RC = Pattern.compile(".*swift_(release|retain).*");
+	static final Pattern symbols_LIBSWIFTCORE_NONATOMIC_RC = Pattern.compile(".*swift_nonatomic_(release|retain).*");
 
 	// NOTE image name for application must be "main" when compiled with -Ounchecked -whole-module-optimization
 	static final String image_APPLICATION = "main";
 	// NOTE * is not allowed for excel sheet name
-//	static final String image_LIBICU = images_LIBICU.pattern();
-	static final String image_LIBICU = "libicu";
+	static final String image_LIBICU = images_LIBICU.pattern().replaceAll("[-\\.\\*]+", "");
+//	static final String image_LIBICU = "libicu";
 	// NOTE * is not allowed for excel sheet name
-//	static final String image_LIBC = images_LIBC.pattern();
-	static final String image_LIBC = "libc";
+	static final String image_LIBC = images_LIBC.pattern().replaceAll("[-\\.\\*]+", "");
+//	static final String image_LIBC = "libc";
 	// NOTE * is not allowed for excel sheet name
-//	static final String image_LD = images_LD.pattern();
-	static final String image_LD = "ld";
+	static final String image_LD = images_LD.pattern().replaceAll("[-\\.\\*]+", "");
+//	static final String image_LD = "ld";
 	// NOTE * is not allowed for excel sheet name
-//	static final String image_LIBFOUNDATION = images_LIBFOUNDATION.pattern();
-	static final String image_LIBFOUNDATION = "libFoundation";
+	static final String image_LIBFOUNDATION = images_LIBFOUNDATION.pattern().replaceAll("[-\\.\\*]+", "");
+//	static final String image_LIBFOUNDATION = "libFoundation";
 	// NOTE * is not allowed for excel sheet name
-//	static final String image_VMLINUX = images_VMLINUX.pattern();
-	static final String image_VMLINUX = "vmlinux";
+	static final String image_VMLINUX = images_VMLINUX.pattern().replaceAll("[-\\.\\*]+", "");
+//	static final String image_VMLINUX = "vmlinux";
 	static final String image_OTHERS = "others";
 	// NOTE * is not allowed for excel sheet name
-//	static final String image_SWIFTCORE_ARC = "libswiftCore(" + symbols_LIBSWIFTCORE_ARC.pattern() + ")";
-	static final String image_SWIFTCORE_ARC = "libswiftCore(ARC)";
+//	static final String image_SWIFTCORE_ATOMIC_RC = "libswiftCore(" + symbols_LIBSWIFTCORE_ATOMIC_RC.pattern().replaceAll("[-\\.\\*]+", "") + ")";
+//	static final String image_SWIFTCORE_ATOMIC_RC = symbols_LIBSWIFTCORE_ATOMIC_RC.pattern().replaceAll("[-\\.\\*]+", "");
+	static final String image_SWIFTCORE_ATOMIC_RC = "libswiftCore(atomicRC)";
+	// NOTE * is not allowed for excel sheet name
+//	static final String image_SWIFTCORE_NONATOMIC_RC = "libswiftCore(" + symbols_LIBSWIFTCORE_NONATOMIC_RC.pattern().replaceAll("[-\\.\\*]+", "") + ")";
+//	static final String image_SWIFTCORE_NONATOMIC_RC = symbols_LIBSWIFTCORE_NONATOMIC_RC.pattern().replaceAll("[-\\.\\*]+", "");
+	static final String image_SWIFTCORE_NONATOMIC_RC = "libswiftCore(nonatomicRC)";
 	static final String image_SWIFTCORE_OTHERS = "libswiftCore(others)";
 
 	// merged, split and sorted
@@ -72,7 +78,8 @@ public class SwiftOperfProcessor {
 		image_LIBICU,
 		image_LIBC,
 		image_SWIFTCORE_OTHERS,
-		image_SWIFTCORE_ARC
+		image_SWIFTCORE_NONATOMIC_RC,
+		image_SWIFTCORE_ATOMIC_RC
 	};
 	static final Set<String> top_images_set = new HashSet<String>();
 	static {
@@ -150,8 +157,10 @@ public class SwiftOperfProcessor {
 	static String splitImage(String image, String symbol) {
 		if (!images_LIBSWIFTCORE.matcher(image).matches()) return image;
 		
-		if (symbols_LIBSWIFTCORE_ARC.matcher(symbol).matches()) {
-			return image_SWIFTCORE_ARC;
+		if (symbols_LIBSWIFTCORE_ATOMIC_RC.matcher(symbol).matches()) {
+			return image_SWIFTCORE_ATOMIC_RC;
+		} else if (symbols_LIBSWIFTCORE_NONATOMIC_RC.matcher(symbol).matches()) {
+			return image_SWIFTCORE_NONATOMIC_RC;
 		} else {
 //			System.out.println(symbol);
 			return image_SWIFTCORE_OTHERS;
