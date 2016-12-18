@@ -16,6 +16,11 @@
 sudo sh -c "echo 0 > /proc/sys/kernel/kptr_restrict"
 
 #
+# execute the following once to avoid "Unexpected error running operf: Permission denied"
+#
+sudo sh -c "echo 1 > /proc/sys/kernel/perf_event_paranoid"
+
+#
 # deep copy benchmark directory in order not to polute repository
 #
 cp -R ../swift/benchmark .

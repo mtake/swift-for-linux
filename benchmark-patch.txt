@@ -1,7 +1,7 @@
 diff -uprN benchmark/build.sh benchmark-patched/build.sh
 --- benchmark/build.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/build.sh	2016-12-12 23:21:24.976397831 +0900
-@@ -0,0 +1,108 @@
++++ benchmark-patched/build.sh	2016-12-18 21:43:14.680430482 +0900
+@@ -0,0 +1,111 @@
 +#!/usr/bin/env bash
 +#set -x
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -15,8 +15,11 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +#
 +# Flags for codegen
 +#
-+#SWIFTC_FLAGS="-g -O -whole-module-optimization"
-+SWIFTC_FLAGS="-g -Ounchecked -whole-module-optimization"
++SWIFTC_FLAGS="-g"
++#SWIFTC_FLAGS="${SWIFTC_FLAGS} -O"
++SWIFTC_FLAGS="${SWIFTC_FLAGS} -Ounchecked"
++SWIFTC_FLAGS="${SWIFTC_FLAGS} -whole-module-optimization"
++#SWIFTC_FLAGS="${SWIFTC_FLAGS} -Xfrontend -assume-single-threaded"
 +
 +
 +
@@ -112,7 +115,7 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +swiftc ${SWIFTC_FLAGS} ${SWIFTC_MODULES_FLAGS} ${SWIFTC_FOUNDATION_FLAGS} -o ${SCRIPTDIR}/main ${UTILSDIR}/main.swift ${OPTIONAL_SOURCES}
 diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
 --- benchmark/clean.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/clean.sh	2016-12-12 23:21:24.976397831 +0900
++++ benchmark-patched/clean.sh	2016-12-18 21:40:25.372426219 +0900
 @@ -0,0 +1,5 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -121,7 +124,7 @@ diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
 +rm -rf ${SCRIPTDIR}/main ${MODULEDIR}
 diff -uprN benchmark/env.sh benchmark-patched/env.sh
 --- benchmark/env.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/env.sh	2016-12-12 23:21:24.976397831 +0900
++++ benchmark-patched/env.sh	2016-12-18 21:40:25.372426219 +0900
 @@ -0,0 +1,23 @@
 +MODULEDIR=${SCRIPTDIR}/bin
 +
@@ -148,7 +151,7 @@ diff -uprN benchmark/env.sh benchmark-patched/env.sh
 +fi
 diff -uprN benchmark/list.sh benchmark-patched/list.sh
 --- benchmark/list.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/list.sh	2016-12-12 23:21:24.976397831 +0900
++++ benchmark-patched/list.sh	2016-12-18 21:40:25.372426219 +0900
 @@ -0,0 +1,4 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -156,7 +159,7 @@ diff -uprN benchmark/list.sh benchmark-patched/list.sh
 +${SCRIPTDIR}/run.sh --list | sed -n -e 's/^    \(.*\)$/\1/p'
 diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 --- benchmark/run-operf.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/run-operf.sh	2016-12-13 01:08:20.491685298 +0900
++++ benchmark-patched/run-operf.sh	2016-12-18 21:40:25.372426219 +0900
 @@ -0,0 +1,64 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -224,7 +227,7 @@ diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 +popd > /dev/null
 diff -uprN benchmark/run.sh benchmark-patched/run.sh
 --- benchmark/run.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/run.sh	2016-12-12 23:21:24.980397831 +0900
++++ benchmark-patched/run.sh	2016-12-18 21:40:25.372426219 +0900
 @@ -0,0 +1,8 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -235,8 +238,8 @@ diff -uprN benchmark/run.sh benchmark-patched/run.sh
 +echo $cmd
 +eval $cmd
 diff -uprN benchmark/single-source/StringTests.swift benchmark-patched/single-source/StringTests.swift
---- benchmark/single-source/StringTests.swift	2016-12-13 01:09:30.307687056 +0900
-+++ benchmark-patched/single-source/StringTests.swift	2016-12-12 23:21:24.980397831 +0900
+--- benchmark/single-source/StringTests.swift	2016-12-18 21:44:26.620432294 +0900
++++ benchmark-patched/single-source/StringTests.swift	2016-12-18 21:40:25.372426219 +0900
 @@ -18,6 +18,7 @@ public func run_StringWithCString(_ N: I
    }
  }
@@ -254,8 +257,8 @@ diff -uprN benchmark/single-source/StringTests.swift benchmark-patched/single-so
  @inline(never)
  internal func compareEqual(_ str1: String, _ str2: String) -> Bool {
 diff -uprN benchmark/single-source/Walsh.swift benchmark-patched/single-source/Walsh.swift
---- benchmark/single-source/Walsh.swift	2016-12-13 01:09:30.307687056 +0900
-+++ benchmark-patched/single-source/Walsh.swift	2016-12-12 23:21:24.980397831 +0900
+--- benchmark/single-source/Walsh.swift	2016-12-18 21:44:26.620432294 +0900
++++ benchmark-patched/single-source/Walsh.swift	2016-12-18 21:40:25.372426219 +0900
 @@ -11,7 +11,11 @@
  //===----------------------------------------------------------------------===//
  
@@ -269,8 +272,8 @@ diff -uprN benchmark/single-source/Walsh.swift benchmark-patched/single-source/W
  func IsPowerOfTwo(_ x: Int) -> Bool { return (x & (x - 1)) == 0 }
  
 diff -uprN benchmark/utils/DriverUtils.swift benchmark-patched/utils/DriverUtils.swift
---- benchmark/utils/DriverUtils.swift	2016-12-13 01:09:30.307687056 +0900
-+++ benchmark-patched/utils/DriverUtils.swift	2016-12-12 23:21:24.980397831 +0900
+--- benchmark/utils/DriverUtils.swift	2016-12-18 21:44:26.620432294 +0900
++++ benchmark-patched/utils/DriverUtils.swift	2016-12-18 21:40:25.372426219 +0900
 @@ -10,7 +10,11 @@
  //
  //===----------------------------------------------------------------------===//
@@ -329,8 +332,8 @@ diff -uprN benchmark/utils/DriverUtils.swift benchmark-patched/utils/DriverUtils
  }
  
 diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
---- benchmark/utils/main.swift	2016-12-13 01:09:30.311687056 +0900
-+++ benchmark-patched/utils/main.swift	2016-12-12 23:21:24.980397831 +0900
+--- benchmark/utils/main.swift	2016-12-18 21:44:26.620432294 +0900
++++ benchmark-patched/utils/main.swift	2016-12-18 21:40:25.372426219 +0900
 @@ -42,7 +42,9 @@ import DeadArray
  import DictTest
  import DictTest2
@@ -421,8 +424,8 @@ diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
    "StringWalk": run_StringWalk,
    "StringWithCString": run_StringWithCString,
 diff -uprN benchmark/utils/TestsUtils.swift benchmark-patched/utils/TestsUtils.swift
---- benchmark/utils/TestsUtils.swift	2016-12-13 01:09:30.311687056 +0900
-+++ benchmark-patched/utils/TestsUtils.swift	2016-12-12 23:21:24.980397831 +0900
+--- benchmark/utils/TestsUtils.swift	2016-12-18 21:44:26.620432294 +0900
++++ benchmark-patched/utils/TestsUtils.swift	2016-12-18 21:40:25.372426219 +0900
 @@ -10,7 +10,11 @@
  //
  //===----------------------------------------------------------------------===//
