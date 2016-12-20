@@ -78,8 +78,8 @@ public class SwiftOperfProcessor {
 		image_LIBICU,
 		image_LIBC,
 		image_SWIFTCORE_OTHERS,
-		image_SWIFTCORE_NONATOMIC_RC,
-		image_SWIFTCORE_ATOMIC_RC
+		image_SWIFTCORE_ATOMIC_RC,
+		image_SWIFTCORE_NONATOMIC_RC
 	};
 	static final Set<String> top_images_set = new HashSet<String>();
 	static {
