@@ -1,7 +1,7 @@
 diff -uprN benchmark/build.sh benchmark-patched/build.sh
 --- benchmark/build.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/build.sh	2016-12-19 21:47:52.562613328 +0900
-@@ -0,0 +1,111 @@
++++ benchmark-patched/build.sh	2017-02-10 10:07:04.552874349 +0900
+@@ -0,0 +1,116 @@
 +#!/usr/bin/env bash
 +#set -x
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -73,7 +73,10 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +    if [[
 +         ( "$modulename" == "DictionaryBridge" ) ||
 +         ( "$modulename" == "NSDictionaryCastToSwift" ) ||
-+         ( "$modulename" == "NSStringConversion" )
++         ( "$modulename" == "NSStringConversion" ) ||
++         ( "$modulename" == "ObjectiveCBridgingStubs" ) ||
++         ( "$modulename" == "ObjectiveCBridging" ) ||
++         ( "$modulename" == "ObjectiveCNoBridgingStubs" )
 +       ]]; then
 +#        echo "Skipping $modulename"
 +        continue
@@ -87,6 +90,7 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f ${OPTIONAL_SOURCES}
 +    [[ $? -eq 0 ]] && SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
 +done
++if [[ -d "${SRCDIR}/unit-tests" ]]; then
 +for f in ${SRCDIR}/unit-tests/*.swift; do
 +#    echo $f
 +    modulename=$(basename $f .swift)
@@ -103,6 +107,7 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f ${OPTIONAL_SOURCES}
 +    [[ $? -eq 0 ]] && SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
 +done
++fi
 +popd > /dev/null
 +
 +
@@ -115,7 +120,7 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +swiftc ${SWIFTC_FLAGS} ${SWIFTC_MODULES_FLAGS} ${SWIFTC_FOUNDATION_FLAGS} -o ${SCRIPTDIR}/main ${UTILSDIR}/main.swift ${OPTIONAL_SOURCES}
 diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
 --- benchmark/clean.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/clean.sh	2016-12-19 21:47:52.562613328 +0900
++++ benchmark-patched/clean.sh	2017-02-09 17:11:50.851340334 +0900
 @@ -0,0 +1,5 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -124,7 +129,7 @@ diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
 +rm -rf ${SCRIPTDIR}/main ${MODULEDIR}
 diff -uprN benchmark/env.sh benchmark-patched/env.sh
 --- benchmark/env.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/env.sh	2016-12-19 21:47:52.562613328 +0900
++++ benchmark-patched/env.sh	2017-02-09 17:11:50.851340334 +0900
 @@ -0,0 +1,23 @@
 +MODULEDIR=${SCRIPTDIR}/bin
 +
@@ -151,7 +156,7 @@ diff -uprN benchmark/env.sh benchmark-patched/env.sh
 +fi
 diff -uprN benchmark/list.sh benchmark-patched/list.sh
 --- benchmark/list.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/list.sh	2016-12-19 21:47:52.562613328 +0900
++++ benchmark-patched/list.sh	2017-02-09 17:11:50.851340334 +0900
 @@ -0,0 +1,4 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -159,7 +164,7 @@ diff -uprN benchmark/list.sh benchmark-patched/list.sh
 +${SCRIPTDIR}/run.sh --list | sed -n -e 's/^    \(.*\)$/\1/p'
 diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 --- benchmark/run-operf.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/run-operf.sh	2016-12-19 21:48:16.570613933 +0900
++++ benchmark-patched/run-operf.sh	2017-02-09 17:11:50.851340334 +0900
 @@ -0,0 +1,68 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -231,7 +236,7 @@ diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 +popd > /dev/null
 diff -uprN benchmark/run.sh benchmark-patched/run.sh
 --- benchmark/run.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/run.sh	2016-12-19 21:47:52.562613328 +0900
++++ benchmark-patched/run.sh	2017-02-09 17:11:50.851340334 +0900
 @@ -0,0 +1,8 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -241,9 +246,26 @@ diff -uprN benchmark/run.sh benchmark-patched/run.sh
 +cmd="${SCRIPTDIR}/main $*"
 +echo $cmd
 +eval $cmd
+diff -uprN benchmark/single-source/MapReduce.swift benchmark-patched/single-source/MapReduce.swift
+--- benchmark/single-source/MapReduce.swift	2017-02-10 11:00:59.388955814 +0900
++++ benchmark-patched/single-source/MapReduce.swift	2017-02-10 10:15:54.312887691 +0900
+@@ -131,6 +131,7 @@ public func run_MapReduceShortString(_ N
+   CheckResults(c != 0, "IncorrectResults in MapReduce")
+ }
+ 
++#if !os(Linux)
+ @inline(never)
+ public func run_MapReduceClass(_ N: Int) {
+   let numbers = (0..<1000).map { NSDecimalNumber(value: $0) }
+@@ -154,4 +155,5 @@ public func run_MapReduceClassShort(_ N:
+   }
+   CheckResults(c != 0, "IncorrectResults in MapReduce")
+ }
++#endif
+ 
 diff -uprN benchmark/single-source/StringTests.swift benchmark-patched/single-source/StringTests.swift
---- benchmark/single-source/StringTests.swift	2016-12-19 21:49:02.982615102 +0900
-+++ benchmark-patched/single-source/StringTests.swift	2016-12-19 21:47:52.562613328 +0900
+--- benchmark/single-source/StringTests.swift	2017-02-10 11:00:59.392955814 +0900
++++ benchmark-patched/single-source/StringTests.swift	2017-02-09 17:11:50.851340334 +0900
 @@ -18,6 +18,7 @@ public func run_StringWithCString(_ N: I
    }
  }
@@ -261,8 +283,8 @@ diff -uprN benchmark/single-source/StringTests.swift benchmark-patched/single-so
  @inline(never)
  internal func compareEqual(_ str1: String, _ str2: String) -> Bool {
 diff -uprN benchmark/single-source/Walsh.swift benchmark-patched/single-source/Walsh.swift
---- benchmark/single-source/Walsh.swift	2016-12-19 21:49:02.982615102 +0900
-+++ benchmark-patched/single-source/Walsh.swift	2016-12-19 21:47:52.562613328 +0900
+--- benchmark/single-source/Walsh.swift	2017-02-10 11:00:59.392955814 +0900
++++ benchmark-patched/single-source/Walsh.swift	2017-02-09 17:11:50.851340334 +0900
 @@ -11,7 +11,11 @@
  //===----------------------------------------------------------------------===//
  
@@ -276,8 +298,8 @@ diff -uprN benchmark/single-source/Walsh.swift benchmark-patched/single-source/W
  func IsPowerOfTwo(_ x: Int) -> Bool { return (x & (x - 1)) == 0 }
  
 diff -uprN benchmark/utils/DriverUtils.swift benchmark-patched/utils/DriverUtils.swift
---- benchmark/utils/DriverUtils.swift	2016-12-19 21:49:02.982615102 +0900
-+++ benchmark-patched/utils/DriverUtils.swift	2016-12-19 21:47:52.562613328 +0900
+--- benchmark/utils/DriverUtils.swift	2017-02-10 11:00:59.392955814 +0900
++++ benchmark-patched/utils/DriverUtils.swift	2017-02-09 17:11:50.851340334 +0900
 @@ -10,7 +10,11 @@
  //
  //===----------------------------------------------------------------------===//
@@ -336,9 +358,9 @@ diff -uprN benchmark/utils/DriverUtils.swift benchmark-patched/utils/DriverUtils
  }
  
 diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
---- benchmark/utils/main.swift	2016-12-19 21:49:02.982615102 +0900
-+++ benchmark-patched/utils/main.swift	2016-12-19 21:47:52.566613328 +0900
-@@ -42,7 +42,9 @@ import DeadArray
+--- benchmark/utils/main.swift	2017-02-10 11:00:59.392955814 +0900
++++ benchmark-patched/utils/main.swift	2017-02-10 10:17:21.160889878 +0900
+@@ -44,7 +44,9 @@ import DeadArray
  import DictTest
  import DictTest2
  import DictTest3
@@ -348,7 +370,7 @@ diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
  import DictionaryLiteral
  import DictionaryRemove
  import DictionarySwap
-@@ -60,14 +62,20 @@ import MapReduce
+@@ -62,14 +64,20 @@ import MapReduce
  import Memset
  import MonteCarloE
  import MonteCarloPi
@@ -369,7 +391,7 @@ diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
  import ObserverClosure
  import ObserverForwarderStruct
  import ObserverPartiallyAppliedMethod
-@@ -140,7 +148,11 @@ precommitTests = [
+@@ -154,7 +162,11 @@ precommitTests = [
    "Dictionary2OfObjects": run_Dictionary2OfObjects,
    "Dictionary3": run_Dictionary3,
    "Dictionary3OfObjects": run_Dictionary3OfObjects,
@@ -381,7 +403,16 @@ diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
    "DictionaryLiteral": run_DictionaryLiteral,
    "DictionaryOfObjects": run_DictionaryOfObjects,
    "DictionaryRemove": run_DictionaryRemove,
-@@ -160,11 +172,21 @@ precommitTests = [
+@@ -179,16 +191,30 @@ precommitTests = [
+   "MapReduceLazyCollectionShort": run_MapReduceLazyCollectionShort,
+   "MapReduceString": run_MapReduceString,
+   "MapReduceShortString": run_MapReduceShortString,
++  /*
++#if !os(Linux)
+   "MapReduceClass": run_MapReduceClass,
+   "MapReduceClassShort": run_MapReduceClassShort,
++#endif
++  */
    "Memset": run_Memset,
    "MonteCarloE": run_MonteCarloE,
    "MonteCarloPi": run_MonteCarloPi,
@@ -403,7 +434,7 @@ diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
    "ObjectiveCBridgeFromNSArrayAnyObject": run_ObjectiveCBridgeFromNSArrayAnyObject,
    "ObjectiveCBridgeFromNSArrayAnyObjectForced": run_ObjectiveCBridgeFromNSArrayAnyObjectForced,
    "ObjectiveCBridgeFromNSArrayAnyObjectToString": run_ObjectiveCBridgeFromNSArrayAnyObjectToString,
-@@ -201,6 +223,8 @@ precommitTests = [
+@@ -225,6 +251,8 @@ precommitTests = [
    "ObjectiveCBridgeToNSDictionary": run_ObjectiveCBridgeToNSDictionary,
    "ObjectiveCBridgeToNSSet": run_ObjectiveCBridgeToNSSet,
    "ObjectiveCBridgeToNSString": run_ObjectiveCBridgeToNSString,
@@ -412,7 +443,7 @@ diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
    "ObserverClosure": run_ObserverClosure,
    "ObserverForwarderStruct": run_ObserverForwarderStruct,
    "ObserverPartiallyAppliedMethod": run_ObserverPartiallyAppliedMethod,
-@@ -238,10 +262,14 @@ precommitTests = [
+@@ -266,10 +294,14 @@ precommitTests = [
    "StrToInt": run_StrToInt,
    "StringBuilder": run_StringBuilder,
    "StringEqualPointerComparison": run_StringEqualPointerComparison,
@@ -428,8 +459,8 @@ diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
    "StringWalk": run_StringWalk,
    "StringWithCString": run_StringWithCString,
 diff -uprN benchmark/utils/TestsUtils.swift benchmark-patched/utils/TestsUtils.swift
---- benchmark/utils/TestsUtils.swift	2016-12-19 21:49:02.982615102 +0900
-+++ benchmark-patched/utils/TestsUtils.swift	2016-12-19 21:47:52.566613328 +0900
+--- benchmark/utils/TestsUtils.swift	2017-02-10 11:00:59.392955814 +0900
++++ benchmark-patched/utils/TestsUtils.swift	2017-02-09 17:11:50.855340334 +0900
 @@ -10,7 +10,11 @@
  //
  //===----------------------------------------------------------------------===//
