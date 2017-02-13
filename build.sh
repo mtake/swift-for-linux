@@ -7,6 +7,8 @@ LOGDIR="${SCRIPTDIR}/.logs"
 UNAME="$(uname)"
 CMD="$(basename "$0")"
 
+# NOTE: build swift runtime with "-Xfrontend -assume-single-threaded"
+#export COMMON_C_FLAGS=-DSWIFT_FORCE_ASSUME_SINGLE_THREADED
 
 BUILD_SCRIPT=${SCRIPTDIR}/../swift/utils/build-script
 
