@@ -37,7 +37,8 @@ public class SwiftOperfProcessor {
 	static final Pattern images_LIBFOUNDATION = Pattern.compile("libFoundation.*");
 	static final Pattern images_VMLINUX = Pattern.compile("vmlinux-.*");
 	static final Pattern images_LIBSWIFTCORE = Pattern.compile("libswiftCore.*");
-	static final Pattern symbols_LIBSWIFTCORE_ATOMIC_RC = Pattern.compile(".*swift_(release|retain).*");
+//	static final Pattern symbols_LIBSWIFTCORE_ATOMIC_RC = Pattern.compile(".*swift_(release|retain).*");
+	static final Pattern symbols_LIBSWIFTCORE_ATOMIC_RC = Pattern.compile(".*swift_(release(?!_dealloc).*|retain.*)");
 	static final Pattern symbols_LIBSWIFTCORE_NONATOMIC_RC = Pattern.compile(".*swift_nonatomic_(release|retain).*");
 
 	// NOTE image name for application must be "main" when compiled with -Ounchecked -whole-module-optimization
