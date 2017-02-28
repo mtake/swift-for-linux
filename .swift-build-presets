@@ -118,3 +118,26 @@ dash-dash
 install-foundation
 install-libdispatch
 reconfigure
+
+
+[preset: buildbot_linux_nonatomic_my]
+mixin-preset=mixin_linux_installation_my
+build-subdir=buildbot_linux
+lldb
+release
+#### WIP temporarily disable test
+####test
+####validation-test
+####long-test
+foundation
+libdispatch
+lit-args=-v
+
+dash-dash
+
+install-foundation
+install-libdispatch
+reconfigure
+
+# Enable non-atomic build of the stdlib
+swift-stdlib-use-nonatomic-rc=true

@@ -29,6 +29,8 @@ elif [[ "${UNAME}" == "Linux" ]]; then
         BUILD_SUBDIR=buildbot_incremental
     else
         PRESET=buildbot_linux_my
+# NOTE: build swift standard library for single-threaded code
+#        PRESET=buildbot_linux_nonatomic_my
         if [[ -z "$(${BUILD_SCRIPT} --show-presets | grep ${PRESET})" ]]; then
             PRESET=buildbot_linux
         fi
