@@ -69,6 +69,58 @@ public class SwiftOperfProcessor {
     static final String image_SWIFTCORE_NONATOMIC_RC = "libswiftCore(nonatomicRC)";
     static final String image_SWIFTCORE_OTHERS = "libswiftCore(others)";
 
+    static final String[] skipped_applications = {
+        "DictionaryBridge",
+        "MapReduceClass",
+        "MapReduceClassShort",
+        "NSDictionaryCastToSwift",
+        "NSStringConversion",
+        "ObjectiveCBridgeFromNSString",
+        "ObjectiveCBridgeFromNSStringForced",
+        "ObjectiveCBridgeToNSString",
+        "ObjectiveCBridgeFromNSArrayAnyObject",
+        "ObjectiveCBridgeFromNSArrayAnyObjectForced",
+        "ObjectiveCBridgeToNSArray",
+        "ObjectiveCBridgeFromNSArrayAnyObjectToString",
+        "ObjectiveCBridgeFromNSArrayAnyObjectToStringForced",
+        "ObjectiveCBridgeFromNSDictionaryAnyObject",
+        "ObjectiveCBridgeFromNSDictionaryAnyObjectForced",
+        "ObjectiveCBridgeToNSDictionary",
+        "ObjectiveCBridgeFromNSDictionaryAnyObjectToString",
+        "ObjectiveCBridgeFromNSDictionaryAnyObjectToStringForced",
+        "ObjectiveCBridgeFromNSSetAnyObject",
+        "ObjectiveCBridgeFromNSSetAnyObjectForced",
+        "ObjectiveCBridgeToNSSet",
+        "ObjectiveCBridgeFromNSSetAnyObjectToString",
+        "ObjectiveCBridgeFromNSSetAnyObjectToStringForced",
+        "ObjectiveCBridgeStubFromNSString",
+        "ObjectiveCBridgeStubToNSString",
+        "ObjectiveCBridgeStubFromArrayOfNSString",
+        "ObjectiveCBridgeStubToArrayOfNSString",
+        "ObjectiveCBridgeStubFromNSDate",
+        "ObjectiveCBridgeStubToNSDate",
+        "ObjectiveCBridgeStubDateAccess",
+        "ObjectiveCBridgeStubDateMutation",
+        "ObjectiveCBridgeStubURLAppendPath",
+        "ObjectiveCBridgeStubDataAppend",
+        "ObjectiveCBridgeStubFromNSStringRef",
+        "ObjectiveCBridgeStubToNSStringRef",
+        "ObjectiveCBridgeStubFromNSDateRef",
+        "ObjectiveCBridgeStubToNSDateRef",
+        "ObjectiveCBridgeStubNSDateRefAccess",
+        "ObjectiveCBridgeStubNSDateMutationRef",
+        "ObjectiveCBridgeStubURLAppendPathRef",
+        "ObjectiveCBridgeStubNSDataAppend",
+        "StringHasPrefix",
+        "StringHasSuffix",
+        "StringHasPrefixUnicode",
+        "StringHasSuffixUnicode",
+    };
+    static final Set<String> skipped_applications_set = new HashSet<String>();
+    static {
+        skipped_applications_set.addAll(Arrays.asList(skipped_applications));
+    }
+
     // merged, split and sorted
     static final String[] top_images = {
         image_APPLICATION,
@@ -110,6 +162,18 @@ public class SwiftOperfProcessor {
         application_to_image.put("DictionaryRemoveOfObjects", "DictionaryRemove");
         application_to_image.put("DictionarySwapOfObjects", "DictionarySwap");
         application_to_image.put("HashTest", "Hash");
+        //application_to_image.put("MapReduce", "MapReduce");
+        application_to_image.put("MapReduceAnyCollection", "MapReduce");
+        application_to_image.put("MapReduceAnyCollectionShort", "MapReduce");
+        application_to_image.put("MapReduceShort", "MapReduce");
+        application_to_image.put("MapReduceSequence", "MapReduce");
+        application_to_image.put("MapReduceLazySequence", "MapReduce");
+        application_to_image.put("MapReduceLazyCollection", "MapReduce");
+        application_to_image.put("MapReduceLazyCollectionShort", "MapReduce");
+        application_to_image.put("MapReduceString", "MapReduce");
+        application_to_image.put("MapReduceShortString", "MapReduce");
+        application_to_image.put("MapReduceClass", "MapReduce");
+        application_to_image.put("MapReduceClassShort", "MapReduce");
         application_to_image.put("ObjectiveCBridgeFromNSString", "ObjectiveCBridging");
         application_to_image.put("ObjectiveCBridgeFromNSStringForced", "ObjectiveCBridging");
         application_to_image.put("ObjectiveCBridgeToNSString", "ObjectiveCBridging");
@@ -159,8 +223,12 @@ public class SwiftOperfProcessor {
         application_to_image.put("SetUnion", "SetTests");
         application_to_image.put("SetUnion_OfObjects", "SetTests");
         application_to_image.put("SortStringsUnicode", "SortStrings");
-        application_to_image.put("StringEqualPointerComparison", "StringTests");
         application_to_image.put("StringWithCString", "StringTests");
+        application_to_image.put("StringHasPrefix", "StringTests");
+        application_to_image.put("StringHasSuffix", "StringTests");
+        application_to_image.put("StringHasPrefixUnicode", "StringTests");
+        application_to_image.put("StringHasSuffixUnicode", "StringTests");
+        application_to_image.put("StringEqualPointerComparison", "StringTests");
     }
 
     static String applicationToImage(String name) {
@@ -409,6 +477,10 @@ public class SwiftOperfProcessor {
                     continue;
                 }
 
+                if (skipped_applications_set.contains(name)) {
+                    continue;
+                }
+
                 //OUT.println(name);
                 try {
                     Application application = new Application(name, new FileReader(filename));
@@ -430,6 +502,10 @@ public class SwiftOperfProcessor {
                 String name = fileToName(filename);
                 if (name == null) {
                     //OUT.println("Skipped " + filename);
+                    continue;
+                }
+
+                if (skipped_applications_set.contains(name)) {
                     continue;
                 }
 
