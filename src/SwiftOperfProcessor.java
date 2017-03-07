@@ -141,28 +141,50 @@ public class SwiftOperfProcessor {
 
     static final TreeMap<String,String> application_to_image = new TreeMap<String,String>();
     static {
+        // ArrayApppend.swift
+        application_to_image.put("ArrayAppend", "ArrayAppend");
         application_to_image.put("ArrayAppendReserved", "ArrayAppend");
         application_to_image.put("ArrayAppendSequence", "ArrayAppend");
         application_to_image.put("ArrayAppendArrayOfInt", "ArrayAppend");
+        application_to_image.put("ArrayPlusEqualArrayOfInt", "ArrayAppend");
         application_to_image.put("ArrayAppendStrings", "ArrayAppend");
         application_to_image.put("ArrayAppendGenericStructs", "ArrayAppend");
         application_to_image.put("ArrayAppendOptionals", "ArrayAppend");
         application_to_image.put("ArrayAppendLazyMap", "ArrayAppend");
         application_to_image.put("ArrayAppendRepeatCol", "ArrayAppend");
+        application_to_image.put("ArrayAppendFromGeneric", "ArrayAppend");
+        application_to_image.put("ArrayAppendToGeneric", "ArrayAppend");
+        application_to_image.put("ArrayAppendToFromGeneric", "ArrayAppend");
+        application_to_image.put("ArrayPlusEqualSingleElementCollection", "ArrayAppend");
+        application_to_image.put("ArrayPlusEqualFiveElementCollection", "ArrayAppend");
+        application_to_image.put("ArrayAppendAscii", "ArrayAppend");
+        application_to_image.put("ArrayAppendLatin1", "ArrayAppend");
+        application_to_image.put("ArrayAppendUTF16", "ArrayAppend");
+        // ArrayLiteral.swift
+        application_to_image.put("ArrayLiteral", "ArrayLiteral");
         application_to_image.put("ArrayValueProp", "ArrayLiteral");
         application_to_image.put("ArrayValueProp2", "ArrayLiteral");
         application_to_image.put("ArrayValueProp3", "ArrayLiteral");
         application_to_image.put("ArrayValueProp4", "ArrayLiteral");
+        // DictTest.swift
         application_to_image.put("Dictionary", "DictTest");
         application_to_image.put("DictionaryOfObjects", "DictTest");
+        // DictTest2.swift
         application_to_image.put("Dictionary2", "DictTest2");
         application_to_image.put("Dictionary2OfObjects", "DictTest2");
+        // DictTest3.swift
         application_to_image.put("Dictionary3", "DictTest3");
         application_to_image.put("Dictionary3OfObjects", "DictTest3");
+        // DictionaryRemove.swift
+        application_to_image.put("DictionaryRemove", "DictionaryRemove");
         application_to_image.put("DictionaryRemoveOfObjects", "DictionaryRemove");
+        // DictionarySwap.swift
+        application_to_image.put("DictionarySwap", "DictionarySwap");
         application_to_image.put("DictionarySwapOfObjects", "DictionarySwap");
+        // Hash.swift
         application_to_image.put("HashTest", "Hash");
-        //application_to_image.put("MapReduce", "MapReduce");
+        // MapReduce.swift
+        application_to_image.put("MapReduce", "MapReduce");
         application_to_image.put("MapReduceAnyCollection", "MapReduce");
         application_to_image.put("MapReduceAnyCollectionShort", "MapReduce");
         application_to_image.put("MapReduceShort", "MapReduce");
@@ -174,6 +196,7 @@ public class SwiftOperfProcessor {
         application_to_image.put("MapReduceShortString", "MapReduce");
         application_to_image.put("MapReduceClass", "MapReduce");
         application_to_image.put("MapReduceClassShort", "MapReduce");
+        // ObjectiveCBridging.swift
         application_to_image.put("ObjectiveCBridgeFromNSString", "ObjectiveCBridging");
         application_to_image.put("ObjectiveCBridgeFromNSStringForced", "ObjectiveCBridging");
         application_to_image.put("ObjectiveCBridgeToNSString", "ObjectiveCBridging");
@@ -192,6 +215,7 @@ public class SwiftOperfProcessor {
         application_to_image.put("ObjectiveCBridgeToNSSet", "ObjectiveCBridging");
         application_to_image.put("ObjectiveCBridgeFromNSSetAnyObjectToString", "ObjectiveCBridging");
         application_to_image.put("ObjectiveCBridgeFromNSSetAnyObjectToStringForced", "ObjectiveCBridging");
+        // ObjectiveCBridgingStubs.swift
         application_to_image.put("ObjectiveCBridgeStubFromNSString", "ObjectiveCBridgingStubs");
         application_to_image.put("ObjectiveCBridgeStubToNSString", "ObjectiveCBridgingStubs");
         application_to_image.put("ObjectiveCBridgeStubFromArrayOfNSString", "ObjectiveCBridgingStubs");
@@ -202,6 +226,7 @@ public class SwiftOperfProcessor {
         application_to_image.put("ObjectiveCBridgeStubDateMutation", "ObjectiveCBridgingStubs");
         application_to_image.put("ObjectiveCBridgeStubURLAppendPath", "ObjectiveCBridgingStubs");
         application_to_image.put("ObjectiveCBridgeStubDataAppend", "ObjectiveCBridgingStubs");
+        // ObjectiveCNoBridgingStubs.swift
         application_to_image.put("ObjectiveCBridgeStubFromNSStringRef", "ObjectiveCNoBridgingStubs");
         application_to_image.put("ObjectiveCBridgeStubToNSStringRef", "ObjectiveCNoBridgingStubs");
         application_to_image.put("ObjectiveCBridgeStubFromNSDateRef", "ObjectiveCNoBridgingStubs");
@@ -210,10 +235,19 @@ public class SwiftOperfProcessor {
         application_to_image.put("ObjectiveCBridgeStubNSDateMutationRef", "ObjectiveCNoBridgingStubs");
         application_to_image.put("ObjectiveCBridgeStubURLAppendPathRef", "ObjectiveCNoBridgingStubs");
         application_to_image.put("ObjectiveCBridgeStubNSDataAppend", "ObjectiveCNoBridgingStubs");
+        // PopFront.swift
         application_to_image.put("PopFrontArray", "PopFront");
-        application_to_image.put("PopFrontArrayGeneric", "PopFrontGeneric");
         application_to_image.put("PopFrontUnsafePointer", "PopFront");
+        // PopFrontGeneric.swift
+        application_to_image.put("PopFrontArrayGeneric", "PopFrontGeneric");
+        // ReversedCollections.swift
+        application_to_image.put("ReversedArray", "ReversedCollections");
+        application_to_image.put("ReversedBidirectional", "ReversedCollections");
+        application_to_image.put("ReversedDictionary", "ReversedCollections");
+        // RGBHistogram.swift
+        application_to_image.put("RGBHistogram", "RGBHistogram");
         application_to_image.put("RGBHistogramOfObjects", "RGBHistogram");
+        // SetTests.swift
         application_to_image.put("SetExclusiveOr", "SetTests");
         application_to_image.put("SetExclusiveOr_OfObjects", "SetTests");
         application_to_image.put("SetIntersect", "SetTests");
@@ -222,7 +256,11 @@ public class SwiftOperfProcessor {
         application_to_image.put("SetIsSubsetOf_OfObjects", "SetTests");
         application_to_image.put("SetUnion", "SetTests");
         application_to_image.put("SetUnion_OfObjects", "SetTests");
+        // SortStrings.swift
+        application_to_image.put("SortSortedStrings", "SortStrings");
+        application_to_image.put("SortStrings", "SortStrings");
         application_to_image.put("SortStringsUnicode", "SortStrings");
+        // StringTests.swift
         application_to_image.put("StringWithCString", "StringTests");
         application_to_image.put("StringHasPrefix", "StringTests");
         application_to_image.put("StringHasSuffix", "StringTests");
