@@ -70,11 +70,17 @@ public class SwiftOperfProcessor {
     static final String image_SWIFTCORE_OTHERS = "libswiftCore(others)";
 
     static final String[] skipped_applications = {
+        // DictionaryBridge.swift
         "DictionaryBridge",
+        // MapReduce.swift
         "MapReduceClass",
         "MapReduceClassShort",
+        // NSDictionaryCastToSwift.swift
         "NSDictionaryCastToSwift",
+        // NSStringConversion.swift
         "NSStringConversion",
+        /*
+        // ObjectiveCBridging.swift
         "ObjectiveCBridgeFromNSString",
         "ObjectiveCBridgeFromNSStringForced",
         "ObjectiveCBridgeToNSString",
@@ -93,6 +99,7 @@ public class SwiftOperfProcessor {
         "ObjectiveCBridgeToNSSet",
         "ObjectiveCBridgeFromNSSetAnyObjectToString",
         "ObjectiveCBridgeFromNSSetAnyObjectToStringForced",
+        // ObjectiveCBridgingStubs.swift
         "ObjectiveCBridgeStubFromNSString",
         "ObjectiveCBridgeStubToNSString",
         "ObjectiveCBridgeStubFromArrayOfNSString",
@@ -103,6 +110,7 @@ public class SwiftOperfProcessor {
         "ObjectiveCBridgeStubDateMutation",
         "ObjectiveCBridgeStubURLAppendPath",
         "ObjectiveCBridgeStubDataAppend",
+        // ObjectiveCNoBridgingStubs.swift
         "ObjectiveCBridgeStubFromNSStringRef",
         "ObjectiveCBridgeStubToNSStringRef",
         "ObjectiveCBridgeStubFromNSDateRef",
@@ -111,6 +119,8 @@ public class SwiftOperfProcessor {
         "ObjectiveCBridgeStubNSDateMutationRef",
         "ObjectiveCBridgeStubURLAppendPathRef",
         "ObjectiveCBridgeStubNSDataAppend",
+        */
+        // StringTests.swift
         "StringHasPrefix",
         "StringHasSuffix",
         "StringHasPrefixUnicode",
@@ -119,6 +129,10 @@ public class SwiftOperfProcessor {
     static final Set<String> skipped_applications_set = new HashSet<String>();
     static {
         skipped_applications_set.addAll(Arrays.asList(skipped_applications));
+    }
+    static boolean is_skipped_application(String name) {
+        assert name != null;
+        return name.startsWith("ObjectiveCBridge") || skipped_applications_set.contains(name);
     }
 
     // merged, split and sorted
@@ -483,16 +497,16 @@ public class SwiftOperfProcessor {
     final TreeMap<String, Long> image_to_globaltotalsample = new TreeMap<String, Long>();
 
     final PrintWriter OUT = new Object() {
-            PrintWriter apply() {
-                //return new PrintWriter(System.out);
-                try {
-                    return new PrintWriter(new FileWriter("output.csv"));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
+        PrintWriter apply() {
+            //return new PrintWriter(System.out);
+            try {
+                return new PrintWriter(new FileWriter("output.csv"));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }.apply();
+            return null;
+        }
+    }.apply();
 
 
     static String fileToName(String filename) {
@@ -515,7 +529,7 @@ public class SwiftOperfProcessor {
                     continue;
                 }
 
-                if (skipped_applications_set.contains(name)) {
+                if (is_skipped_application(name)) {
                     continue;
                 }
 
@@ -543,7 +557,7 @@ public class SwiftOperfProcessor {
                     continue;
                 }
 
-                if (skipped_applications_set.contains(name)) {
+                if (is_skipped_application(name)) {
                     continue;
                 }
 
