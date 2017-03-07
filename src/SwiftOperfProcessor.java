@@ -591,6 +591,7 @@ public class SwiftOperfProcessor {
 
 
     void printMap(Map map) {
+        @SuppressWarnings("unchecked")
         Iterator<Entry> iter = (Iterator<Entry>) map.entrySet().iterator();
         while (iter.hasNext()) {
             Entry entry = iter.next();
