@@ -1,7 +1,7 @@
 diff -uprN benchmark/build.sh benchmark-patched/build.sh
 --- benchmark/build.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/build.sh	2017-02-28 18:31:50.005950766 +0900
-@@ -0,0 +1,117 @@
++++ benchmark-patched/build.sh	2017-03-09 11:32:08.952899251 +0900
+@@ -0,0 +1,88 @@
 +#!/usr/bin/env bash
 +#set -x
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -71,17 +71,6 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +for f in ${SRCDIR}/*.swift; do
 +#    echo $f
 +    modulename=$(basename $f .swift)
-+    if [[
-+         ( "$modulename" == "DictionaryBridge" ) ||
-+         ( "$modulename" == "NSDictionaryCastToSwift" ) ||
-+         ( "$modulename" == "NSStringConversion" ) ||
-+         ( "$modulename" == "ObjectiveCBridgingStubs" ) ||
-+         ( "$modulename" == "ObjectiveCBridging" ) ||
-+         ( "$modulename" == "ObjectiveCNoBridgingStubs" )
-+       ]]; then
-+#        echo "Skipping $modulename"
-+        continue
-+    fi
 +    echo $modulename
 +    if [[ ( "$modulename" != "ProtocolDispatch") ]]; then
 +        OPTIONAL_SOURCES="${UTILSDIR}/TestsUtils.swift"
@@ -91,24 +80,6 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f ${OPTIONAL_SOURCES}
 +    [[ $? -eq 0 ]] && SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
 +done
-+if [[ -d "${SRCDIR}/unit-tests" ]]; then
-+for f in ${SRCDIR}/unit-tests/*.swift; do
-+#    echo $f
-+    modulename=$(basename $f .swift)
-+    if [[
-+         ( "$modulename" == "ObjectiveCBridgingStubs" ) ||
-+         ( "$modulename" == "ObjectiveCBridging" ) ||
-+         ( "$modulename" == "ObjectiveCNoBridgingStubs" )
-+       ]]; then
-+#        echo "Skipping $modulename"
-+        continue
-+    fi
-+    echo $modulename
-+    OPTIONAL_SOURCES="${UTILSDIR}/TestsUtils.swift"
-+    swiftc ${SWIFTC_FLAGS} -I ${MODULEDIR} ${SWIFTC_FOUNDATION_FLAGS} -emit-module -module-name $modulename -emit-library $f ${OPTIONAL_SOURCES}
-+    [[ $? -eq 0 ]] && SWIFTC_MODULES="-l$modulename${SWIFTC_MODULES:+ }${SWIFTC_MODULES}"
-+done
-+fi
 +popd > /dev/null
 +
 +
@@ -121,7 +92,7 @@ diff -uprN benchmark/build.sh benchmark-patched/build.sh
 +swiftc ${SWIFTC_FLAGS} ${SWIFTC_MODULES_FLAGS} ${SWIFTC_FOUNDATION_FLAGS} -o ${SCRIPTDIR}/main ${UTILSDIR}/main.swift ${OPTIONAL_SOURCES}
 diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
 --- benchmark/clean.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/clean.sh	2017-02-28 18:13:06.513922472 +0900
++++ benchmark-patched/clean.sh	2017-03-09 11:29:05.336894627 +0900
 @@ -0,0 +1,5 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -130,7 +101,7 @@ diff -uprN benchmark/clean.sh benchmark-patched/clean.sh
 +rm -rf ${SCRIPTDIR}/main ${MODULEDIR}
 diff -uprN benchmark/env.sh benchmark-patched/env.sh
 --- benchmark/env.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/env.sh	2017-02-28 18:13:06.513922472 +0900
++++ benchmark-patched/env.sh	2017-03-09 11:29:05.336894627 +0900
 @@ -0,0 +1,28 @@
 +MODULEDIR=${SCRIPTDIR}/bin
 +
@@ -162,7 +133,7 @@ diff -uprN benchmark/env.sh benchmark-patched/env.sh
 +#export SWIFT_ASSUME_SINGLE_THREADED=1
 diff -uprN benchmark/list.sh benchmark-patched/list.sh
 --- benchmark/list.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/list.sh	2017-02-28 18:13:06.513922472 +0900
++++ benchmark-patched/list.sh	2017-03-09 11:29:05.336894627 +0900
 @@ -0,0 +1,4 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -170,7 +141,7 @@ diff -uprN benchmark/list.sh benchmark-patched/list.sh
 +${SCRIPTDIR}/run.sh --list | sed -n -e 's/^    \(.*\)$/\1/p'
 diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 --- benchmark/run-operf.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/run-operf.sh	2017-02-28 18:13:06.513922472 +0900
++++ benchmark-patched/run-operf.sh	2017-03-09 11:29:05.336894627 +0900
 @@ -0,0 +1,68 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -242,7 +213,7 @@ diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 +popd > /dev/null
 diff -uprN benchmark/run.sh benchmark-patched/run.sh
 --- benchmark/run.sh	1970-01-01 09:00:00.000000000 +0900
-+++ benchmark-patched/run.sh	2017-02-28 18:13:06.513922472 +0900
++++ benchmark-patched/run.sh	2017-03-09 11:29:05.336894627 +0900
 @@ -0,0 +1,8 @@
 +#!/usr/bin/env bash
 +SCRIPTDIR="$(cd "`dirname "$0"`"; pwd)"
@@ -252,225 +223,3 @@ diff -uprN benchmark/run.sh benchmark-patched/run.sh
 +cmd="${SCRIPTDIR}/main $*"
 +echo $cmd
 +eval $cmd
-diff -uprN benchmark/single-source/MapReduce.swift benchmark-patched/single-source/MapReduce.swift
---- benchmark/single-source/MapReduce.swift	2017-02-28 18:18:14.237930222 +0900
-+++ benchmark-patched/single-source/MapReduce.swift	2017-02-28 18:17:07.313928537 +0900
-@@ -133,7 +133,7 @@ public func run_MapReduceShortString(_ N
- 
- @inline(never)
- public func run_MapReduceClass(_ N: Int) {
--  let numbers = (0..<1000).map { NSDecimalNumber(value: $0) }
-+  let numbers = (0..<1000).map { NSDecimalNumber(integerLiteral: $0) }
- 
-   var c = 0
-   for _ in 1...N*100 {
-@@ -145,7 +145,7 @@ public func run_MapReduceClass(_ N: Int)
- 
- @inline(never)
- public func run_MapReduceClassShort(_ N: Int) {
--  let numbers = (0..<10).map { NSDecimalNumber(value: $0) }
-+  let numbers = (0..<10).map { NSDecimalNumber(integerLiteral: $0) }
- 
-   var c = 0
-   for _ in 1...N*10000 {
-diff -uprN benchmark/single-source/StringTests.swift benchmark-patched/single-source/StringTests.swift
---- benchmark/single-source/StringTests.swift	2017-02-28 18:18:14.241930222 +0900
-+++ benchmark-patched/single-source/StringTests.swift	2017-02-28 18:13:06.513922472 +0900
-@@ -18,6 +18,7 @@ public func run_StringWithCString(_ N: I
-   }
- }
- 
-+#if _runtime(_ObjC)
- public func run_StringHasPrefix(_ N: Int) {
-   let prefix = "prefix"
-   let testString = "prefixedString"
-@@ -65,6 +66,7 @@ public func run_StringHasSuffixUnicode(_
-     }
-   }
- }
-+#endif
- 
- @inline(never)
- internal func compareEqual(_ str1: String, _ str2: String) -> Bool {
-diff -uprN benchmark/single-source/Walsh.swift benchmark-patched/single-source/Walsh.swift
---- benchmark/single-source/Walsh.swift	2017-02-28 18:18:14.241930222 +0900
-+++ benchmark-patched/single-source/Walsh.swift	2017-02-28 18:13:06.513922472 +0900
-@@ -11,7 +11,11 @@
- //===----------------------------------------------------------------------===//
- 
- import TestsUtils
-+#if os(Linux)
-+import Glibc
-+#else
- import Darwin
-+#endif
- 
- func IsPowerOfTwo(_ x: Int) -> Bool { return (x & (x - 1)) == 0 }
- 
-diff -uprN benchmark/utils/DriverUtils.swift benchmark-patched/utils/DriverUtils.swift
---- benchmark/utils/DriverUtils.swift	2017-02-28 18:18:14.241930222 +0900
-+++ benchmark-patched/utils/DriverUtils.swift	2017-02-28 18:13:06.513922472 +0900
-@@ -10,7 +10,11 @@
- //
- //===----------------------------------------------------------------------===//
- 
-+#if os(Linux)
-+import Glibc
-+#else
- import Darwin
-+#endif
- 
- struct BenchResults {
-   var delim: String  = ","
-@@ -227,9 +231,13 @@ func stopTrackingObjects(_: UnsafeMutabl
- #endif
- 
- class SampleRunner {
-+#if !os(Linux)
-   var info = mach_timebase_info_data_t(numer: 0, denom: 0)
-+#endif
-   init() {
-+#if !os(Linux)
-     mach_timebase_info(&info)
-+#endif
-   }
-   func run(_ name: String, fn: (Int) -> Void, num_iters: UInt) -> UInt64 {
-     // Start the timer.
-@@ -237,17 +245,30 @@ class SampleRunner {
-     var str = name
-     startTrackingObjects(UnsafeMutableRawPointer(str._core.startASCII))
- #endif
-+#if os(Linux)
-+    let start_ticks = clock()
-+#else
-     let start_ticks = mach_absolute_time()
-+#endif
-     fn(Int(num_iters))
-     // Stop the timer.
-+#if os(Linux)
-+    let end_ticks = clock()
-+#else
-     let end_ticks = mach_absolute_time()
-+#endif
- #if SWIFT_RUNTIME_ENABLE_LEAK_CHECKER
-     stopTrackingObjects(UnsafeMutableRawPointer(str._core.startASCII))
- #endif
- 
-     // Compute the spent time and the scaling factor.
-     let elapsed_ticks = end_ticks - start_ticks
-+#if os(Linux)
-+//    return UInt64(elapsed_ticks) * UInt64(1000000000) / UInt64(CLOCKS_PER_SEC)
-+    return UInt64(elapsed_ticks) * UInt64(1000) // POSIX requires CLOCKS_PER_SEC to be 1000000
-+#else
-     return elapsed_ticks * UInt64(info.numer) / UInt64(info.denom)
-+#endif
-   }
- }
- 
-diff -uprN benchmark/utils/main.swift benchmark-patched/utils/main.swift
---- benchmark/utils/main.swift	2017-02-28 18:18:14.241930222 +0900
-+++ benchmark-patched/utils/main.swift	2017-02-28 18:33:39.345953519 +0900
-@@ -44,7 +44,9 @@ import DeadArray
- import DictTest
- import DictTest2
- import DictTest3
-+#if _runtime(_ObjC)
- import DictionaryBridge
-+#endif
- import DictionaryLiteral
- import DictionaryRemove
- import DictionarySwap
-@@ -62,14 +64,20 @@ import MapReduce
- import Memset
- import MonteCarloE
- import MonteCarloPi
-+#if _runtime(_ObjC)
- import NSDictionaryCastToSwift
-+#endif
- import NSError
-+#if _runtime(_ObjC)
- import NSStringConversion
-+#endif
- import NopDeinit
- import ObjectAllocation
-+#if _runtime(_ObjC)
- import ObjectiveCBridging
- import ObjectiveCBridgingStubs
- import ObjectiveCNoBridgingStubs
-+#endif
- import ObserverClosure
- import ObserverForwarderStruct
- import ObserverPartiallyAppliedMethod
-@@ -154,7 +162,11 @@ precommitTests = [
-   "Dictionary2OfObjects": run_Dictionary2OfObjects,
-   "Dictionary3": run_Dictionary3,
-   "Dictionary3OfObjects": run_Dictionary3OfObjects,
-+  /*
-+#if _runtime(_ObjC)
-   "DictionaryBridge": run_DictionaryBridge,
-+#endif
-+  */
-   "DictionaryLiteral": run_DictionaryLiteral,
-   "DictionaryOfObjects": run_DictionaryOfObjects,
-   "DictionaryRemove": run_DictionaryRemove,
-@@ -184,11 +196,21 @@ precommitTests = [
-   "Memset": run_Memset,
-   "MonteCarloE": run_MonteCarloE,
-   "MonteCarloPi": run_MonteCarloPi,
-+  /*
-+#if _runtime(_ObjC)
-   "NSDictionaryCastToSwift": run_NSDictionaryCastToSwift,
-+#endif
-+  */
-   "NSError": run_NSError,
-+  /*
-+#if _runtime(_ObjC)
-   "NSStringConversion": run_NSStringConversion,
-+#endif
-+  */
-   "NopDeinit": run_NopDeinit,
-   "ObjectAllocation": run_ObjectAllocation,
-+  /*
-+#if _runtime(_ObjC)
-   "ObjectiveCBridgeFromNSArrayAnyObject": run_ObjectiveCBridgeFromNSArrayAnyObject,
-   "ObjectiveCBridgeFromNSArrayAnyObjectForced": run_ObjectiveCBridgeFromNSArrayAnyObjectForced,
-   "ObjectiveCBridgeFromNSArrayAnyObjectToString": run_ObjectiveCBridgeFromNSArrayAnyObjectToString,
-@@ -225,6 +247,8 @@ precommitTests = [
-   "ObjectiveCBridgeToNSDictionary": run_ObjectiveCBridgeToNSDictionary,
-   "ObjectiveCBridgeToNSSet": run_ObjectiveCBridgeToNSSet,
-   "ObjectiveCBridgeToNSString": run_ObjectiveCBridgeToNSString,
-+#endif
-+  */
-   "ObserverClosure": run_ObserverClosure,
-   "ObserverForwarderStruct": run_ObserverForwarderStruct,
-   "ObserverPartiallyAppliedMethod": run_ObserverPartiallyAppliedMethod,
-@@ -266,10 +290,14 @@ precommitTests = [
-   "StrToInt": run_StrToInt,
-   "StringBuilder": run_StringBuilder,
-   "StringEqualPointerComparison": run_StringEqualPointerComparison,
-+  /*
-+#if _runtime(_ObjC)
-   "StringHasPrefix": run_StringHasPrefix,
-   "StringHasPrefixUnicode": run_StringHasPrefixUnicode,
-   "StringHasSuffix": run_StringHasSuffix,
-   "StringHasSuffixUnicode": run_StringHasSuffixUnicode,
-+#endif
-+  */
-   "StringInterpolation": run_StringInterpolation,
-   "StringWalk": run_StringWalk,
-   "StringWithCString": run_StringWithCString,
-diff -uprN benchmark/utils/TestsUtils.swift benchmark-patched/utils/TestsUtils.swift
---- benchmark/utils/TestsUtils.swift	2017-02-28 18:18:14.241930222 +0900
-+++ benchmark-patched/utils/TestsUtils.swift	2017-02-28 18:13:06.517922473 +0900
-@@ -10,7 +10,11 @@
- //
- //===----------------------------------------------------------------------===//
- 
-+#if os(Linux)
-+import Glibc
-+#else
- import Darwin
-+#endif
- 
- // Linear function shift register.
- //
