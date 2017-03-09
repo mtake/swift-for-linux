@@ -12,6 +12,13 @@ pushd ${SCRIPTDIR}/../swift > /dev/null
 
 echo "Updating swift started at $(date)" | tee -a "${LOGDIR}/${CMD}-${TIMESTAMP}.log"
 
-git pull
+cmd="git fetch upstream master"
+echo $cmd
+eval $cmd
+
+cmd="git rebase upstream/master"
+#echo $cmd
+#eval $cmd
+echo "Now cd ${SCRIPTDIR}/../swift and execute \"$cmd\""
 
 popd > /dev/null
