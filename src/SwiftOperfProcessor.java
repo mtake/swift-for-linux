@@ -195,6 +195,108 @@ public class SwiftOperfProcessor {
         // DictionarySwap.swift
         application_to_image.put("DictionarySwap", "DictionarySwap");
         application_to_image.put("DictionarySwapOfObjects", "DictionarySwap");
+        /*
+        // ExistentialPerformance.swift
+        application_to_image.put("ExistentialTestOneMethodCall_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestOneMethodCall_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestOneMethodCall_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestOneMethodCall_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestOneMethodCall_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestOneMethodCall_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestOneMethodCall_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestOneMethodCall_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestOneMethodCall_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestTwoMethodCalls_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialOneMethodCall_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestPassExistentialTwoMethodCalls_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutating_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestMutatingAndNonMutating_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayOneMethodCall_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayTwoMethodCalls_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayMutating_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayShift_ClassValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_IntValueBuffer0", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_IntValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_IntValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_IntValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_IntValueBuffer4", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_ClassValueBuffer1", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_ClassValueBuffer2", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_ClassValueBuffer3", "ExistentialPerformance");
+        application_to_image.put("ExistentialTestArrayConditionalShift_ClassValueBuffer4", "ExistentialPerformance");
+        */
         // Hash.swift
         application_to_image.put("HashTest", "Hash");
         // MapReduce.swift
@@ -284,7 +386,9 @@ public class SwiftOperfProcessor {
     }
 
     static String applicationToImage(String name) {
-        String image = application_to_image.get(name);
+        String image = null;
+        if (image == null) if (name.startsWith("Existential")) image = "ExistentialPerformance";
+        if (image == null) image = application_to_image.get(name);
         if (image == null) image = name;
         return image_prefix + image + image_suffix;
     }

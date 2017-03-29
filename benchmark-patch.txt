@@ -156,7 +156,7 @@ diff -uprN benchmark/run-operf.sh benchmark-patched/run-operf.sh
 +OPERF_FLAGS="--events CPU_CLK_UNHALTED:500000 --vmlinux /usr/lib/debug/boot/vmlinux-$(uname -r)"
 +# For callgraph
 +#OPERF_FLAGS="${OPERF_FLAGS} --callgraph"
-+APP_FLAGS="--iter-scale=50"
++APP_FLAGS="--iter-scale=10"
 +TESTFILE=${SCRIPTDIR}/list.txt
 +SLEEP_SECONDS=1
 +
