@@ -47,6 +47,7 @@ lit-args=-v
 
 dash-dash
 
+build-ninja
 reconfigure
 
 
@@ -84,7 +85,7 @@ install-llbuild
 install-swiftpm
 install-xctest
 install-prefix=/usr
-swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license
+swift-install-components=autolink-driver;compiler;clang-builtin-headers;stdlib;swift-remote-mirror;sdk-overlay;license;sourcekit-inproc
 build-swift-static-stdlib
 build-swift-static-sdk-overlay
 build-swift-stdlib-unittest-extra
@@ -116,10 +117,12 @@ lit-args=-v
 
 dash-dash
 
+# rdar://problem/31454823
+skip-test-lldb
+
 install-foundation
 install-libdispatch
 reconfigure
-skip-build-benchmarks
 
 
 [preset: buildbot_linux_nonatomic_my]
@@ -137,10 +140,12 @@ lit-args=-v
 
 dash-dash
 
+# rdar://problem/31454823
+skip-test-lldb
+
 install-foundation
 install-libdispatch
 reconfigure
-skip-build-benchmarks
 
 # Enable non-atomic build of the stdlib
 swift-stdlib-use-nonatomic-rc=true
