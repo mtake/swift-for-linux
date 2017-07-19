@@ -25,6 +25,10 @@ swiftpm
 
 dash-dash
 
+#### WIP temporarily disable test
+# Disable osx tests.
+skip-test-osx
+
 # Only run OS X tests to make the build cycle faster.
 # We still build the iOS standard library though -- it is free given the
 # parallelism.
